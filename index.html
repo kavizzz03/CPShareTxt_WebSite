@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description"
+        content="CP Share TXT - Easily save and manage your text with a user-friendly interface. Quickly submit text and provide feedback. Your data auto-deletes after 5 minutes for enhanced privacy." />
+    <meta name="keywords" content="CP Share TXT, Save Text Online, Manage Text, Auto-Delete Text, Feedback" />
+    <meta name="author" content="Kavizz" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://cpsharetxt.com/" />
+    <meta property="og:title" content="CP Share TXT - Save and Manage Text Online" />
+    <meta property="og:description"
+        content="Easily save your text online with auto-deletion and a user-friendly interface. Visit CP Share TXT now." />
+    <meta property="og:url" content="https://cpsharetxt.com/" />
+    <meta property="og:image" content="https://cpsharetxt.com/thumbnail.png" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="icontxt.webp" />
+    <title>CP Share TXT - Save and Manage Text Online</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Animate.css for smooth animations -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        /* Base */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            background-image: url('imageback.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f8f9fa;
+            scroll-behavior: smooth;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            z-index: -1;
+            backdrop-filter: blur(6px);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+        }
+
+        /* Container */
+        .container {
+            max-width: 800px;
+            margin-top: 25px;
+            margin-bottom: 60px;
+            flex: 1;
+            padding: 0 20px 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            color: #1a1a1a;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1e293b !important;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+            padding: 10px 0;
+            border-bottom: 3px solid #0ea5e9;
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #f8f9fa !important;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: #0ea5e9 !important;
+            font-weight: 700;
+            text-shadow: 0 0 10px #0ea5e9;
+        }
+
+        .btn-admin {
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 6px 15px;
+            margin-left: 15px;
+            box-shadow: 0 0 5px transparent;
+        }
+
+        .btn-admin:hover {
+            background-color: #0ea5e9 !important;
+            border-color: #0ea5e9 !important;
+            box-shadow: 0 0 15px #0ea5e9;
+            color: white !important;
+        }
+
+        /* Instructions */
+        .instructions {
+            background-color: #e0f2fe;
+            border-left: 5px solid #0ea5e9;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: #0c4a6e;
+            font-size: 1rem;
+            line-height: 1.5;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
+        }
+
+        .instructions h4 {
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 15px;
+            letter-spacing: 0.02em;
+        }
+
+        .instructions ul li {
+            margin-bottom: 12px;
+        }
+
+        .instructions strong {
+            color: #075985;
+        }
+
+        /* Form Section */
+        #formSection {
+            padding: 30px 35px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            transition: box-shadow 0.3s ease;
+        }
+
+        #formSection:hover {
+            box-shadow: 0 12px 40px rgba(0, 165, 255, 0.35);
+        }
+
+        #formSection h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0c4a6e;
+            margin-bottom: 25px;
+            letter-spacing: 0.04em;
+        }
+
+        /* Labels */
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* Inputs */
+        input[type="text"],
+        select,
+        textarea {
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0284c7;
+            box-shadow: 0 0 12px #38bdf8;
+            background-color: #e0f2fe;
+        }
+
+        textarea.form-control {
+            min-height: 220px;
+            resize: vertical;
+        }
+
+        /* Char count */
+        #charCount {
+            color: #334155;
+            font-weight: 600;
+            text-align: right;
+            margin-top: 5px;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* Buttons */
+        .btn-primary,
+        .btn-secondary {
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: #0369a1;
+            box-shadow: 0 7px 25px rgba(3, 105, 161, 0.5);
+            outline: none;
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            border-color: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background-color: #475569;
+            border-color: #475569;
+            color: white;
+            outline: none;
+            box-shadow: 0 7px 25px rgba(71, 85, 105, 0.5);
+        }
+
+        /* Drag & Drop */
+        #dragDropArea {
+            border: 2.5px dashed #0ea5e9;
+            padding: 25px;
+            text-align: center;
+            color: #0ea5e9;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            user-select: none;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(14, 165, 233, 0.2);
+        }
+
+        #dragDropArea.dragover {
+            background-color: #dbeafe;
+            border-color: #0284c7;
+            box-shadow: inset 0 0 15px rgba(2, 132, 199, 0.5);
+        }
+
+        /* Scroll To Top */
+        #scrollToTopBtn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            display: none;
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 15px 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.6rem;
+            box-shadow: 0 6px 16px rgba(14, 165, 233, 0.6);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            z-index: 1100;
+        }
+
+        #scrollToTopBtn:hover {
+            background-color: #0284c7;
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer.footer-custom {
+            background: linear-gradient(135deg, #1e293b, #0ea5e9);
+            border-top: 3px solid #0284c7;
+            box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #f8f9fa; /* white text */
+            padding: 20px 0;
+            margin-top: 40px;
+            text-align: center;
+            user-select: none;
+        }
+
+        footer.footer-custom p,
+        footer.footer-custom a {
+            color: #f8f9fa !important;
+            margin: 0;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+
+        footer.footer-custom a:hover,
+        footer.footer-custom a:focus {
+            color: #ffffff !important;
+            text-shadow: 0 0 8px #ffffff;
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 20px 15px 30px 15px;
+            }
+
+            #formSection {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid px-4 px-md-5">
+            <a class="navbar-brand fw-bold fs-4" href="index.html">CP Share TXT</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav fs-6">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Submit Text</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="display_data.html">Saved Data</a>
+                    </li>
+                </ul>
+                <a class="btn btn-admin btn-outline-light" href="admin_panel.php">Admin Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container animate__animated animate__fadeInUp">
+        <div class="instructions animate__animated animate__fadeInDown" role="region" aria-label="User Instructions">
+            <h4>How to Use CP Share TXT</h4>
+            <ul>
+                <li><strong>Enter your username</strong> in the username field. This helps identify your submissions.</li>
+                <li><strong>Select the input type:</strong> <em>Text</em> to submit plain text or <em>File</em> to upload a file.</li>
+                <li>If you select <strong>Text</strong>, type or paste your text (up to 10,000 characters) in the text box.</li>
+                <li>If you select <strong>File</strong>, click or drag &amp; drop a file (max 10 MB) into the upload area.</li>
+                <li>Click the <strong>Share</strong> button to save your text or file securely.</li>
+                <li>Your shared data will <strong>auto-delete after 5 minutes</strong> to protect your privacy.</li>
+                <li>To provide feedback, use the <strong>Give Feedback</strong> button below the form.</li>
+            </ul>
+        </div>
+
+        <section id="formSection">
+            <h2>Submit Your Text or File</h2>
+            <form id="userForm" enctype="multipart/form-data" method="POST" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="username" name="username" required
+                        placeholder="Enter your username" autocomplete="off" />
+                    <div class="invalid-feedback">
+                        Please enter your username.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="inputType" class="form-label">Input Type <span class="text-danger">*</span></label>
+                    <select class="form-select" id="inputType" name="inputType" required>
+                        <option value="text" selected>Text</option>
+                        <option value="file">File</option>
+                    </select>
+                    <div class="invalid-feedback">Please select input type.</div>
+                </div>
+
+                <div id="textInputSection" class="mb-3">
+                    <label for="userText" class="form-label">Text (Max 10000 characters)</label>
+                    <textarea class="form-control" id="userText" name="userText" rows="8" maxlength="10000"
+                        placeholder="Enter your text here..."></textarea>
+                    <div id="charCount" class="form-text text-end">0/10000 characters</div>
+                </div>
+
+                <div id="fileInputSection" class="mb-3" style="display: none;">
+                    <label for="userFile" class="form-label">Upload File (Max 10 MB)</label>
+                    <div id="dragDropArea" tabindex="0" aria-label="Drag and drop your file here or click to select">
+                        Drag & Drop your file here or click to select
+                    </div>
+                    <input type="file" class="form-control" id="userFile" name="userFile"
+                        style="display: none" />
+                    <div class="form-text text-muted mt-1">All file types supported</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Share</button>
+            </form>
+        </section>
+
+        <a href="feedback_form.html" class="btn btn-secondary w-100 mt-4 mb-5">Give Feedback</a>
+    </div>
+
+    <!-- Toast container for success notifications -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+            aria-atomic="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Success!</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <button id="scrollToTopBtn" title="Go to top" aria-label="Scroll to top">↑</button>
+
+    <footer class="footer-custom">
+        <p>Developer: <a href="https://your-website.com" target="_blank" rel="noopener noreferrer">Kavizz</a> | All
+            Rights Reserved © 2025</p>
+    </footer>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (() => {
+            'use strict';
+
+            const form = document.getElementById('userForm');
+            const inputTypeSelect = $('#inputType');
+            const textSection = $('#textInputSection');
+            const fileSection = $('#fileInputSection');
+            const userText = $('#userText');
+            const userFile = $('#userFile');
+            const dragDropArea = $('#dragDropArea');
+            const maxFileSize = 10 * 1024 * 1024; // 10 MB
+            const scrollBtn = document.getElementById('scrollToTopBtn');
+
+            // Initialize form action based on default selection
+            function updateFormAction() {
+                if (inputTypeSelect.val() === 'text') {
+                    form.action = 'save_text.php';
+                    textSection.show();
+                    fileSection.hide();
+                    userFile.val('');
+                } else {
+                    form.action = 'save_file.php';
+                    textSection.hide();
+                    fileSection.show();
+                    userText.val('');
+                    $('#charCount').text('0/10000 characters');
+                }
+            }
+
+            // Initial call
+            updateFormAction();
+
+            inputTypeSelect.on('change', updateFormAction);
+
+            // Textarea character count update
+            userText.on('input', () => {
+                const length = userText.val().length;
+                $('#charCount').text(`${length}/10000 characters`);
+            });
+
+            // Drag & Drop events
+            dragDropArea.on('dragenter dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dragDropArea.addClass('dragover');
+            });
+
+            dragDropArea.on('dragleave dragend drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dragDropArea.removeClass('dragover');
+            });
+
+            dragDropArea.on('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const files = e.originalEvent.dataTransfer.files;
+                if (files.length) {
+                    if (files[0].size > maxFileSize) {
+                        alert('File is too large. Max size is 10 MB.');
+                        return;
+                    }
+                    userFile[0].files = files;
+                }
+            });
+
+            // Open file selector on dragDropArea click or keyboard
+            dragDropArea.on('click keypress', (e) => {
+                if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    userFile.click();
+                }
+            });
+
+            // File input change
+            userFile.on('change', function () {
+                if (this.files.length) {
+                    if (this.files[0].size > maxFileSize) {
+                        alert('File is too large. Max size is 10 MB.');
+                        this.value = '';
+                        return;
+                    }
+                }
+            });
+
+            // Bootstrap form validation
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+
+                if (inputTypeSelect.val() === 'text') {
+                    if (!userText.val().trim()) {
+                        alert('Please enter some text.');
+                        return;
+                    }
+                } else {
+                    if (!userFile[0].files.length) {
+                        alert('Please select a file to upload.');
+                        return;
+                    }
+                }
+
+                // Submit via AJAX to prevent page reload
+                const formData = new FormData(form);
+
+                $.ajax({
+                    url: form.action,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        $('#toastMessage').text(response.message || 'Shared successfully!');
+                        const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                        toast.show();
+                        form.reset();
+                        updateFormAction();
+                        $('#charCount').text('0/10000 characters');
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + (xhr.responseJSON?.message || error));
+                    }
+                });
+            });
+
+            // Scroll to top button
+            window.onscroll = function () {
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    scrollBtn.style.display = 'block';
+                } else {
+                    scrollBtn.style.display = 'none';
+                }
+            };
+
+            scrollBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        })();
+    </script>
+</body>
+
+</html>

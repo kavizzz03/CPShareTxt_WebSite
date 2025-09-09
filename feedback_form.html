@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icontxt.webp">
+    <title>Feedback Page</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .header-section {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 2px solid #fff;
+            margin-bottom: 50px;
+        }
+
+        .header-section h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            font-size: 1.2rem;
+        }
+
+        .navbar {
+            background-color: #333;
+            margin-bottom: 40px;
+        }
+
+        .navbar a {
+            color: #f8f9fa;
+            font-size: 1.1rem;
+            padding: 10px;
+        }
+
+        .navbar a:hover {
+            color: #007bff;
+        }
+
+        .navbar ul {
+            list-style-type: none;
+            display: inline;
+        }
+
+        .navbar ul li {
+            display: inline;
+            padding: 10px;
+        }
+
+        .feedback-form-container {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feedback-form-container h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .feedback-form-container label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .feedback-form-container input, .feedback-form-container textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            font-size: 1rem;
+        }
+
+        .feedback-form-container button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .feedback-form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            background-color: #333;
+            color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <div class="header-section">
+        <h1>Welcome to the Feedback Page</h1>
+        <p>Your feedback helps us improve our service. Please take a moment to share your thoughts.</p>
+    </div>
+
+
+
+    <!-- Feedback Form -->
+    <div class="feedback-form-container">
+        <h2>Feedback Form</h2>
+        <form action="send_feedback.php" method="POST">
+            <label for="email">Your Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="feedback">Your Feedback:</label>
+            <textarea id="feedback" name="feedback" rows="5" required></textarea>
+
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Developer: Kavizz | All Rights Reserved</p>
+    </footer>
+
+    <!-- Bootstrap JS (Optional but Recommended) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

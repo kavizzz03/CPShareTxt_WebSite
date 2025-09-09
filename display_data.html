@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="icontxt.webp" />
+  <title>CPShareTXT - Display Saved Data</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+
+  <!-- Animate.css for animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet" />
+
+  <style>
+    /* FLEXBOX SETUP TO KEEP FOOTER AT BOTTOM */
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      position: relative;
+      background-image: url('imageback.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #f8f9fa;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Container main takes remaining space */
+    main.container {
+      flex-grow: 1;
+      min-height: calc(100vh - 60px);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 14px;
+      padding: 30px 25px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+      margin-bottom: 50px;
+      color: #1a1a1a;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      z-index: -1;
+      backdrop-filter: blur(6px);
+    }
+
+    h2, h4 {
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #0c4a6e;
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+
+    .instructions {
+      background-color: #e0f2fe;
+      border-left: 5px solid #0ea5e9;
+      padding: 20px 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      color: #0c4a6e;
+      font-size: 1rem;
+      line-height: 1.5;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
+    }
+
+    /* Buttons container */
+    #usernameButtons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      gap: 16px;
+      margin-top: 20px;
+      justify-items: center;
+    }
+
+    /* User button style */
+    .user-btn {
+      background: #0ea5e9;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.6);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      text-align: center;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-btn:hover {
+      background: #0284c7;
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(2, 132, 199, 0.8);
+    }
+
+    /* Text display box */
+    #textDisplay {
+      display: none;
+      background: #e0f2fe;
+      border-left: 5px solid #0ea5e9;
+      padding: 25px 20px;
+      margin-top: 30px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      box-shadow: 0 0 25px rgba(14, 165, 233, 0.35);
+      white-space: pre-wrap;
+      color: #0c4a6e;
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    /* Scroll to top button */
+    #scrollToTopBtn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #0ea5e9;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px 18px;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(14, 165, 233, 0.6);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 1100;
+    }
+    #scrollToTopBtn.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    #scrollToTopBtn:hover {
+      background-color: #0284c7;
+      transform: scale(1.1);
+    }
+
+    /* Custom Buttons */
+    .btn-custom {
+      background-color: #0ea5e9;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 12px 28px;
+      margin: 0 10px 20px 0;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.6);
+      user-select: none;
+      text-decoration: none !important;
+      display: inline-block;
+    }
+    .btn-custom:hover {
+      background-color: #0284c7;
+      box-shadow: 0 0 25px rgba(2, 132, 199, 0.9);
+      text-decoration: none;
+      color: white !important;
+    }
+
+    /* Loading spinner */
+    #loadingSpinner {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    /* Navbar styles from first code */
+    .navbar {
+      background-color: #1e293b !important;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      padding: 10px 0;
+      border-bottom: 3px solid #0ea5e9;
+    }
+
+    .navbar-brand,
+    .navbar-nav .nav-link {
+      color: #f8f9fa !important;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+      color: #0ea5e9 !important;
+      font-weight: 700;
+      text-shadow: 0 0 10px #0ea5e9;
+    }
+
+    .btn-admin {
+      transition: all 0.3s ease;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 6px 15px;
+      margin-left: 15px;
+      box-shadow: 0 0 5px transparent;
+      border: 2px solid transparent;
+      color: #f8f9fa !important;
+      background-color: transparent;
+    }
+
+    .btn-admin:hover {
+      background-color: #0ea5e9 !important;
+      border-color: #0ea5e9 !important;
+      box-shadow: 0 0 15px #0ea5e9;
+      color: white !important;
+      text-decoration: none;
+    }
+
+    /* Footer styles from first code */
+    footer.footer-custom {
+      background: linear-gradient(135deg, #1e293b, #0ea5e9);
+      border-top: 3px solid #0284c7;
+      box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.1);
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #f8f9fa; /* white text */
+      padding: 20px 0;
+      margin-top: 40px;
+      text-align: center;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    footer.footer-custom p,
+    footer.footer-custom a {
+      color: #f8f9fa !important;
+      margin: 0;
+      transition: color 0.3s ease;
+      text-decoration: none;
+    }
+
+    footer.footer-custom a:hover,
+    footer.footer-custom a:focus {
+      color: #ffffff !important;
+      text-shadow: 0 0 8px #ffffff;
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container-content {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 20px 15px 30px 15px;
+      }
+    }
+  </style>
+</head>
+<body class="d-flex flex-column">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4 px-md-5">
+      <a class="navbar-brand fw-bold fs-4" href="index.html">CP Share TXT</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav fs-6">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Submit Text</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="display_data.html">Saved Data</a>
+          </li>
+        </ul>
+        <a class="btn btn-admin btn-outline-light" href="admin_panel.php">Admin Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="container container-content flex-grow-1">
+    <section class="instructions animate__animated animate__fadeInDown" role="region" aria-label="User Instructions">
+      <h4>User Instructions</h4>
+      <ul>
+        <li><strong>View Text:</strong> Click on the <strong>"Display Texts"</strong> button to view saved text entries as user buttons.</li>
+        <li><strong>View Files:</strong> Click on the <strong>"Display Files"</strong> button to see saved files.</li>
+        <li><strong>Delete Text:</strong> To delete a text entry, click the <span class="text-danger fw-bold">Delete</span> button next to the username. You will be asked to confirm the deletion.</li>
+        <li><strong>Protect Text:</strong> Use the <span class="text-success fw-bold">Protection Toggle</span> next to each entry to mark a text as <em>protected</em>. Protected texts are safe from auto-deletion for up to 1 month.</li>
+        <li><strong>Auto Deletion:</strong> Unprotected texts are automatically deleted after <span class="fw-bold">5 minutes</span> of saving. Protected texts are kept safe for up to <span class="fw-bold">1 month</span>, after which they will be deleted automatically.</li>
+        <li><strong>Copy Text:</strong> Use the <span class="btn btn-sm btn-outline-primary py-0 px-1">Copy</span> button to copy text to your clipboard quickly.</li>
+        <li><strong>View Details:</strong> Click on a username button to view the full text details below.</li>
+      </ul>
+    </section>
+
+    <section class="mt-4 text-center">
+      <button id="displayTextsBtn" class="btn-custom animate__animated animate__pulse animate__infinite">Display Texts</button>
+      <a href="backend.php" class="btn-custom">Display Files</a>
+    </section>
+
+    <section id="loadingSpinner" aria-live="polite" aria-busy="true" class="mt-4">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </section>
+
+    <section id="usernameButtons" class="mt-4 animate__animated"></section>
+
+    <section id="textDisplay" tabindex="0" aria-label="User text details" class="animate__animated"></section>
+  </main>
+
+  <!-- Scroll to Top Button -->
+  <button id="scrollToTopBtn" aria-label="Scroll to top">↑</button>
+
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <p>Developer: <a href="https://your-website.com" target="_blank" rel="noopener noreferrer">Kavizz</a> | All Rights Reserved © 2025</p>
+  </footer>
+
+  <!-- JS Dependencies -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      const $loadingSpinner = $('#loadingSpinner');
+      const $usernameButtons = $('#usernameButtons');
+      const $textDisplay = $('#textDisplay');
+      const $displayTextsBtn = $('#displayTextsBtn');
+      const $scrollBtn = $('#scrollToTopBtn');
+
+      // Show/hide scroll-to-top button
+      $(window).on('scroll', () => {
+        if ($(window).scrollTop() > 150) {
+          $scrollBtn.addClass('show animate__animated animate__fadeIn');
+        } else {
+          $scrollBtn.removeClass('show animate__fadeOut');
+        }
+      });
+
+      // Scroll to top smooth
+      $scrollBtn.click(() => {
+        $('html, body').animate({ scrollTop: 0 }, 600);
+      });
+
+      // Load and show user buttons
+      function loadUserButtons() {
+        $loadingSpinner.show();
+        $textDisplay.hide().removeClass('animate__fadeInUp');
+        $usernameButtons.removeClass('animate__fadeInUp').empty();
+
+        $.ajax({
+          url: 'load_data.php',
+          type: 'GET',
+          dataType: 'html',
+          success: function(data) {
+            if (!data.trim()) {
+              Swal.fire({
+                icon: 'info',
+                title: 'No Data',
+                text: 'No saved texts available at the moment.',
+              });
+              $loadingSpinner.hide();
+              return;
+            }
+            $usernameButtons.html(data).addClass('animate__fadeInUp');
+            $loadingSpinner.hide();
+          },
+          error: function(xhr, status, error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error loading data',
+              text: error,
+            });
+            $loadingSpinner.hide();
+          }
+        });
+      }
+
+      // Display text on username button click
+      $usernameButtons.on('click', '.username-link', function() {
+        const username = $(this).text();
+        const text = $(this).data('text');
+
+        $textDisplay.hide();
+        $textDisplay.html(`<h4>Text details for <span class="text-primary">${escapeHtml(username)}</span>:</h4><p>${escapeHtml(text)}</p>`);
+        $textDisplay.show().addClass('animate__fadeInUp').focus();
+      });
+
+      // Copy text to clipboard on copy button click
+      $usernameButtons.on('click', '.copy-btn', function() {
+        const textToCopy = $(this).data('text');
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Copied to clipboard!',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+          });
+        }).catch(err => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Copy failed',
+            text: err,
+          });
+        });
+      });
+
+      // Delete text entry on delete button click with confirmation
+      $usernameButtons.on('click', '.delete-btn', function() {
+        const username = $(this).data('username');
+        const $btn = $(this);
+        Swal.fire({
+          title: `Delete entry for "${username}"?`,
+          text: "This action cannot be undone.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, delete it!',
+          reverseButtons: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: 'delete_data.php',
+              type: 'POST',
+              dataType: 'json',
+              data: { delete_username: username },
+              success: function(res) {
+                if (res.status === 'success') {
+                  // Remove the deleted user's button(s)
+                  $btn.closest('.user-btn-wrapper').remove();
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: res.message || 'The entry has been deleted.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                  });
+
+                  // Clear text display if showing deleted user
+                  const displayedUser = $textDisplay.find('span.text-primary').text();
+                  if (displayedUser === username) {
+                    $textDisplay.hide().empty();
+                  }
+                } else {
+                  Swal.fire('Error', res.message || 'Deletion failed.', 'error');
+                }
+              },
+              error: function() {
+                Swal.fire('Error', 'Unable to delete entry.', 'error');
+              }
+            });
+          }
+        });
+      });
+
+      // Protection toggle button logic (optional: toggle UI and send to backend)
+      $usernameButtons.on('click', '.protect-btn', function() {
+        const username = $(this).data('username');
+        const $btn = $(this);
+        // Toggle UI state
+        const isProtected = $btn.hasClass('btn-success');
+        const newStatus = !isProtected;
+
+        // Optionally send AJAX request to update protection status in backend here
+        // For demo, just toggle button appearance
+        if (newStatus) {
+          $btn.removeClass('btn-outline-success').addClass('btn-success').text('Protected');
+        } else {
+          $btn.removeClass('btn-success').addClass('btn-outline-success').text('Protect');
+        }
+      });
+
+      // === VIEW BUTTON FUNCTIONALITY ===
+      $usernameButtons.on('click', '.view-details-btn', function () {
+        const fullText = $(this).data('fulltext');
+        const username = $(this).data('username');
+
+        const escapedUsername = escapeHtml(username);
+        const escapedText = escapeHtml(fullText);
+
+        const viewHtml = `
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h4 class="mb-0">Full Text for <span class="text-primary">${escapedUsername}</span>:</h4>
+            <button class="btn btn-outline-danger btn-sm close-view" aria-label="Close View">
+              <i class="fas fa-times"></i> Close
+            </button>
+          </div>
+          <div class="bg-light border p-3 rounded" style="white-space: pre-wrap; color: #212529;">${escapedText}</div>
+        `;
+
+        $textDisplay
+          .html(viewHtml)
+          .show()
+          .addClass('animate__fadeInUp')
+          .focus();
+      });
+
+      // Close view text section
+      $textDisplay.on('click', '.close-view', function () {
+        $textDisplay.hide().empty();
+      });
+
+      // Utility function: escape HTML to prevent XSS
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // Initial load of user buttons when page loads
+      $displayTextsBtn.on('click', loadUserButtons);
+    });
+  </script>
+</body>
+</html>
