@@ -1,13 +1,16 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 define("COMMON_PASSWORD", "dunil2003");
 
+// Database connection
 $conn = new mysqli("localhost", "u569550465_kavindu", "Malshan2003#", "u569550465_dew");
 if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
-// AUTO DELETE unlocked files older than 2 weeks (14 days)
+// AUTO DELETE unlocked files older than 2 weeks
 $twoWeeksAgo = date('Y-m-d H:i:s', strtotime('-14 days'));
-
-// Select all unlocked files older than 2 weeks
 $selectOldUnlocked = $conn->prepare("SELECT username, file_path FROM user_files WHERE is_locked = 0 AND created_at < ?");
 $selectOldUnlocked->bind_param("s", $twoWeeksAgo);
 $selectOldUnlocked->execute();
@@ -16,21 +19,14 @@ $resultOldUnlocked = $selectOldUnlocked->get_result();
 while ($row = $resultOldUnlocked->fetch_assoc()) {
     $usernameToDelete = $row['username'];
     $fileToDelete = $row['file_path'];
-    
-    // Delete the file if exists
-    if ($fileToDelete && file_exists($fileToDelete)) {
-        unlink($fileToDelete);
-    }
-    
-    // Delete the record from DB
+    if ($fileToDelete && file_exists($fileToDelete)) unlink($fileToDelete);
     $delStmt = $conn->prepare("DELETE FROM user_files WHERE username = ?");
     $delStmt->bind_param("s", $usernameToDelete);
     $delStmt->execute();
 }
-
 $selectOldUnlocked->close();
 
-// Lock/Unlock file
+// Lock/Unlock (GET)
 if (isset($_GET['lock_toggle']) && isset($_GET['username'])) {
     $username = $_GET['username'];
     $stmt = $conn->prepare("UPDATE user_files SET is_locked = NOT is_locked WHERE username = ?");
@@ -40,7 +36,7 @@ if (isset($_GET['lock_toggle']) && isset($_GET['username'])) {
     exit();
 }
 
-// Delete file if password is correct
+// Delete (GET)
 if (isset($_GET['delete']) && isset($_GET['username'])) {
     $username = $_GET['username'];
     $stmt = $conn->prepare("SELECT file_path FROM user_files WHERE username = ?");
@@ -51,236 +47,362 @@ if (isset($_GET['delete']) && isset($_GET['username'])) {
     $stmt->close();
 
     if ($filePath && file_exists($filePath)) unlink($filePath);
-
     $delStmt = $conn->prepare("DELETE FROM user_files WHERE username = ?");
     $delStmt->bind_param("s", $username);
     $delStmt->execute();
 
-    echo "<p class='text-success text-center mt-3'>Record deleted successfully.</p>";
+    header("Location: backend.php");
+    exit();
 }
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CP Share TXT - File Manager</title>
+  <title>CPShareTXT - File Manager</title>
   <link rel="icon" href="icontxt.webp" />
-  
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  <!-- Font Awesome for icons -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <!-- Bootstrap 5 + icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- AOS + Lottie + SweetAlert2 -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@1.5.7/dist/lottie-player.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    body {
-      background: linear-gradient(to right, #000000cc, #1c1c1cdd), url('imageback.png') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    :root{
+      --accent: #06b6d4;
+      --accent-2: #0891b2;
+      --muted: #9ca3af;
+      --bg-dark: #071a2b;
+      --bg-light: #f8fafc;
+      --card-radius: 1rem;
+      --focus: rgba(6,182,212,0.14);
+      --glass-dark: rgba(255,255,255,0.03);
+      --glass-light: rgba(2,6,23,0.04);
+      --max-width: 1200px;
+      --table-bg-light: #ffffff;
+      --table-bg-dark: rgba(255,255,255,0.05); /* transparent glass in dark mode */
     }
-    main.container {
-      flex-grow: 1;
+
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:#0f172a;
+      background: linear-gradient(180deg, var(--bg-light) 0%, #eef2ff 100%);
+      -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
+      transition: background 0.28s ease, color 0.28s ease;
     }
-    table {
-      background-color: white;
-      color: black;
+
+    /* dark mode */
+    body.dark-mode {
+      color: #e6eef6;
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(6,182,212,0.06), transparent),
+        radial-gradient(800px 500px at 90% 90%, rgba(8,145,178,0.04), transparent),
+        linear-gradient(180deg, var(--bg-dark) 0%, #041023 0%);
     }
-    .btn-custom {
-      margin-right: 8px;
-      min-width: 90px;
+
+    .app-container { max-width: var(--max-width); margin:0 auto; padding:1rem; }
+
+    /* Card */
+    .card-glass{
+      border-radius: var(--card-radius);
+      border:1px solid rgba(2,6,23,0.06);
+      background: linear-gradient(180deg,#fff,#fbfdff);
+      padding: 1rem;
+      transition: background 0.28s, border-color 0.28s;
     }
-    .header-title {
-      color: #0ea5e9;
-      font-weight: 700;
-      text-align: center;
-      margin: 30px 0 20px 0;
-      text-shadow: 0 0 5px #0ea5e9;
+    body.dark-mode .card-glass{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
     }
-    /* Navbar styles */
-    .navbar {
-      background-color: #1e293b !important;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-      padding: 10px 0;
-      border-bottom: 3px solid #0ea5e9;
-      user-select: none;
+
+    header { padding: .75rem 0; display:flex; align-items:center; justify-content:space-between; }
+    .brand-title { font-weight:800; letter-spacing:-0.3px; color: inherit; }
+    .brand-sub { font-size:.78rem; opacity:.9; color: inherit; }
+
+    .muted { color: rgba(15,23,42,0.6); }
+    body.dark-mode .muted { color: rgba(230,238,246,0.72); }
+
+    /* NAV header items */
+    nav a, nav .nav-cta { color: inherit; text-decoration:none; transition: color .18s; }
+    nav a:hover { color: var(--accent-2); }
+
+    /* TABLE styling (glass in dark mode, white in light) */
+    .table-wrap { overflow-x:auto; margin-top:1rem; border-radius:12px; }
+    table.app-table {
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--table-bg-light);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: background .28s, box-shadow .28s;
     }
-    .navbar-brand,
-    .navbar-nav .nav-link {
-      color: #f8f9fa !important;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      transition: color 0.3s ease;
+    body.dark-mode table.app-table {
+      background: var(--table-bg-dark);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 6px 30px rgba(2,6,23,0.12);
     }
-    .navbar-nav .nav-link:hover,
-    .navbar-nav .nav-link.active {
-      color: #0ea5e9 !important;
-      font-weight: 700;
-      text-shadow: 0 0 10px #0ea5e9;
+
+    .app-table thead tr { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color:#fff; }
+    .app-table th, .app-table td { padding: .75rem .9rem; text-align:center; vertical-align:middle; }
+    .app-table tbody tr { border-bottom: 1px solid rgba(0,0,0,0.02); }
+    body.dark-mode .app-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.02); }
+    .app-table tbody tr:hover { transform: translateY(-2px); transition: transform .12s, background .12s; background: rgba(6,182,212,0.06); }
+
+    /* Buttons */
+    .btn-custom { min-width:90px; margin: 6px 6px 6px 0; font-weight:600; border-radius:8px; padding:.45rem .6rem; }
+    .btn-download { background:#10b981; color:#fff; border:none; box-shadow: 0 6px 18px rgba(16,185,129,0.06); }
+    .btn-download:hover { filter:brightness(.95); transform:translateY(-2px); }
+    .btn-delete { background:#ef4444; color:#fff; border:none; box-shadow: 0 6px 18px rgba(239,68,68,0.06); }
+    .btn-delete:hover { filter:brightness(.95); transform:translateY(-2px); }
+    .btn-lock { background:#fbbf24; color:#000; border:none; }
+    .btn-lock:hover { filter:brightness(.98); transform:translateY(-2px); }
+
+    /* responsive */
+    @media (max-width: 860px) {
+      .brand-title { font-size: 1rem; }
+      .btn-custom { min-width:70px; padding:.35rem .5rem; font-size:.85rem; }
     }
-    .btn-admin {
-      transition: all 0.3s ease;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 6px 15px;
-      margin-left: 15px;
-      box-shadow: 0 0 5px transparent;
-      border: 2px solid transparent;
-      color: #f8f9fa !important;
-      background-color: transparent;
-      user-select: none;
+
+    /* stacked rows on small widths */
+    @media (max-width: 680px) {
+      .app-table thead { display:none; }
+      .app-table, .app-table tbody, .app-table tr, .app-table td { display:block; width:100%; }
+      .app-table tr { margin-bottom:.9rem; border-radius:10px; padding:.6rem; background: var(--table-bg-light); }
+      body.dark-mode .app-table tr { background: var(--table-bg-dark); }
+      .app-table td { text-align:left; padding:.6rem; position:relative; }
+      .app-table td::before { content: attr(data-label); font-weight:700; display:inline-block; width:110px; color:var(--muted); }
+      .app-table td.actions { display:flex; gap:.5rem; justify-content:flex-start; }
     }
-    .btn-admin:hover {
-      background-color: #0ea5e9 !important;
-      border-color: #0ea5e9 !important;
-      box-shadow: 0 0 15px #0ea5e9;
-      color: white !important;
-      text-decoration: none;
-    }
-    /* Footer styles */
-    footer.footer-custom {
-      margin-top: auto;
-      background: linear-gradient(135deg, #1e293b, #0ea5e9);
-      border-top: 3px solid #0284c7;
-      box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.1);
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: #f8f9fa;
-      padding: 20px 0;
-      text-align: center;
-      user-select: none;
-    }
-    footer.footer-custom p,
-    footer.footer-custom a {
-      color: #f8f9fa !important;
-      margin: 0;
-      transition: color 0.3s ease;
-      text-decoration: none;
-    }
-    footer.footer-custom a:hover,
-    footer.footer-custom a:focus {
-      color: #ffffff !important;
-      text-shadow: 0 0 8px #ffffff;
-      text-decoration: underline;
-    }
+
+    footer { margin-top: 1.5rem; text-align:center; }
   </style>
 </head>
 <body>
+  <div class="app-container">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container px-4 px-md-5">
-    <a class="navbar-brand fw-bold fs-4" href="index.html">CP Share TXT</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-      <ul class="navbar-nav fs-6">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">Submit Text</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="display_data.html">Saved Files</a>
-        </li>
-      </ul>
-      <a class="btn btn-admin btn-outline-light" href="admin_panel.php">Admin Login</a>
-    </div>
-  </div>
-</nav>
+    <!-- NAV / HEADER (user-provided header) -->
+    <header class="d-flex align-items-center justify-content-between">
+      <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+        <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#0891b2);display:flex;align-items:center;justify-content:center;">
+          <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json" background="transparent" speed="1" style="width:40px;height:40px" loop autoplay></lottie-player>
+        </div>
+        <div>
+          <div class="brand-title">CP Share TXT</div>
+          <div class="brand-sub muted">Fast • Private • Free</div>
+        </div>
+      </a>
 
-<!-- Main container -->
-<main class="container my-4">
+      <nav class="d-flex align-items-center gap-2">
+        <div class="d-none d-sm-inline nav-cta muted">Free • </div>
+        <a href="display_data.html" class="text-decoration-none small px-2 py-1 rounded-2 muted">Saved</a>
+        <a href="feedback_form.html" class="text-decoration-none small px-2 py-1 rounded-2 muted">Feedback</a>
+        <a href="admin_panel.php" class="text-decoration-none small px-2 py-1 rounded-2 muted" style="background: rgba(0,0,0,0.04);">Admin</a>
 
-  <h2 class="header-title">📁 File Manager - Uploaded Files</h2>
+        <button id="themeToggle" class="btn btn-sm btn-outline-custom ms-2" aria-label="Toggle theme" title="Toggle light/dark">
+          <i id="themeIcon" class="bi bi-moon-fill"></i>
+        </button>
+      </nav>
+    </header>
 
-  <div class="table-responsive shadow rounded">
-    <?php
-    $result = $conn->query("SELECT * FROM user_files ORDER BY created_at DESC");
-    if ($result && $result->num_rows > 0) {
-      echo '<table class="table table-bordered table-hover align-middle mb-0">';
-      echo '<thead class="table-primary"><tr><th>Username</th><th>File</th><th>Uploaded At</th><th>Locked?</th><th>Actions</th></tr></thead><tbody>';
-      while ($row = $result->fetch_assoc()) {
-        $username = htmlspecialchars($row['username']);
-        $file = htmlspecialchars($row['file_path']);
-        $createdAt = htmlspecialchars($row['created_at']);
-        $isLocked = (bool)$row['is_locked'];
+    <!-- Main Table -->
+    <main>
+      <h2 class="mt-3 mb-3">📂 Uploaded Files Manager</h2>
 
-        $lockBtnText = $isLocked ? "Unlock 🔓" : "Lock 🔒";
-        $lockBtnClass = $isLocked ? "btn-warning" : "btn-outline-info";
+      <div class="table-wrap card-glass p-3 shadow" data-aos="fade-up">
+        <?php
+        $result = $conn->query("SELECT * FROM user_files ORDER BY created_at DESC");
+        if ($result && $result->num_rows > 0) {
+          echo '<table class="app-table" role="table" aria-label="Uploaded files">';
+          echo '<thead><tr><th>Username</th><th>File</th><th>Uploaded At</th><th>Locked?</th><th>Actions</th></tr></thead><tbody>';
+          while ($row = $result->fetch_assoc()) {
+            $username = $row['username'];
+            $filePath = $row['file_path'];
+            $fileBasename = htmlspecialchars(basename($filePath));
+            $fileEsc = json_encode($filePath); // safe for JS
+            $usernameEsc = json_encode($username);
+            $createdAt = htmlspecialchars($row['created_at']);
+            $isLocked = (bool)$row['is_locked'];
+            $lockBtnText = $isLocked ? "Unlock 🔓" : "Lock 🔒";
 
-        echo "<tr>";
-        echo "<td>$username</td>";
-        echo "<td><a href='$file' target='_blank' download>" . basename($file) . "</a></td>";
-        echo "<td>$createdAt</td>";
-        echo "<td>" . ($isLocked ? "<span class='badge bg-warning text-dark'>Yes</span>" : "<span class='badge bg-secondary'>No</span>") . "</td>";
-        echo "<td>";
-        if ($isLocked) {
-          echo "<button class='btn btn-warning btn-sm btn-custom' onclick=\"promptPasswordAndDownload('$file')\">Download</button>";
-          echo "<button class='btn btn-danger btn-sm btn-custom' onclick=\"promptPasswordAndDelete('$username')\">Delete</button>";
+            echo "<tr>";
+            echo "<td data-label='Username'>" . htmlspecialchars($username) . "</td>";
+            echo "<td data-label='File' title='" . htmlspecialchars($filePath) . "'>" . $fileBasename . "</td>";
+            echo "<td data-label='Uploaded At'>" . $createdAt . "</td>";
+            echo "<td data-label='Locked?'>" . ($isLocked ? "<span class='badge bg-warning text-dark'>Yes</span>" : "<span class='badge bg-secondary'>No</span>") . "</td>";
+
+            // Actions: use buttons (so SweetAlert runs)
+            echo "<td class='actions' data-label='Actions' style='white-space:nowrap;'>";
+            echo "<button class='btn btn-download btn-custom' onclick='promptPasswordAndDownload($fileEsc, " . ($isLocked ? 'true' : 'false') . ")' aria-label='Download'>Download</button>";
+            echo "<button class='btn btn-delete btn-custom' onclick='promptPasswordAndDelete($usernameEsc, " . ($isLocked ? 'true' : 'false') . ")' aria-label='Delete'>Delete</button>";
+            echo "<button class='btn btn-lock btn-custom' onclick='promptPasswordAndToggleLock($usernameEsc, " . ($isLocked ? 'true' : 'false') . ")' aria-label='Lock/Unlock'>$lockBtnText</button>";
+            echo "</td>";
+
+            echo "</tr>";
+          }
+          echo '</tbody></table>';
         } else {
-          echo "<a class='btn btn-success btn-sm btn-custom' href='$file' download>Download</a>";
-          echo "<a class='btn btn-danger btn-sm btn-custom' href='?delete=true&username=" . urlencode($username) . "' onclick='return confirm(\"Are you sure you want to delete this file?\")'>Delete</a>";
+          echo "<p class='text-center py-3 muted'>No files uploaded yet.</p>";
         }
-        echo "<button class='btn $lockBtnClass btn-sm' onclick=\"promptPasswordAndToggleLock('$username', $isLocked)\">$lockBtnText</button>";
-        echo "</td>";
-        echo "</tr>";
-      }
-      echo '</tbody></table>';
-    } else {
-      echo "<p class='text-center text-light py-3'>No files uploaded yet.</p>";
-    }
-    $conn->close();
-    ?>
+        $conn->close();
+        ?>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-4 py-4 text-center">
+      <div class="card-glass d-inline-block p-3 rounded-3">
+        <div class="small muted mb-1">Made with Kavizz - CP Share TXT</div>
+        <div class="small muted">© <span id="footerYear"></span> • Team Alpha Software Solutions - Kavizz</div>
+      </div>
+    </footer>
   </div>
 
-</main>
+  <script>
+    // inject PHP password safely
+    const COMMON_PASSWORD = <?php echo json_encode(COMMON_PASSWORD); ?>;
 
-<!-- Footer -->
-<footer class="footer-custom">
-  <p>Developer: <a href="https://your-website.com" target="_blank" rel="noopener noreferrer">Kavizz</a> | All Rights Reserved © 2025</p>
-</footer>
+    // footer year
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-<script>
-function promptPasswordAndDownload(filePath) {
-  const pwd = prompt("Enter password to download:");
-  if (pwd === "CariTokka") {
-    window.open(filePath, '_blank');
-  } else {
-    alert("❌ Incorrect password!");
-  }
-}
-
-function promptPasswordAndDelete(username) {
-  const pwd = prompt("Enter password to delete:");
-  if (pwd === "CariTokka") {
-    window.location.href = "?delete=true&username=" + encodeURIComponent(username);
-  } else {
-    alert("❌ Incorrect password!");
-  }
-}
-
-function promptPasswordAndToggleLock(username, isLocked) {
-  if (isLocked) {
-    const pwd = prompt("Enter password to unlock:");
-    if (pwd === "dunil2003") {
-      window.location.href = "?lock_toggle=true&username=" + encodeURIComponent(username);
+    // theme toggle with persistence (uses dark-mode class)
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const saved = localStorage.getItem('cp_theme');
+    if (saved === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeIcon.className = 'bi bi-sun-fill';
     } else {
-      alert("❌ Incorrect password!");
+      document.body.classList.remove('dark-mode');
+      themeIcon.className = 'bi bi-moon-fill';
     }
-  } else {
-    // Locking doesn't require password
-    window.location.href = "?lock_toggle=true&username=" + encodeURIComponent(username);
-  }
-}
-</script>
+    themeToggle.addEventListener('click', () => {
+      const nowDark = !document.body.classList.contains('dark-mode');
+      document.body.classList.toggle('dark-mode', nowDark);
+      localStorage.setItem('cp_theme', nowDark ? 'dark' : 'light');
+      themeIcon.className = nowDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+    });
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    // SweetAlert flows
 
+    function promptPasswordAndDownload(filePath, isLocked) {
+      if (!isLocked) {
+        // open directly
+        window.open(filePath, '_blank');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Enter password to download',
+        input: 'password',
+        inputPlaceholder: 'Password',
+        showCancelButton: true,
+        confirmButtonText: 'Download',
+        allowOutsideClick: false,
+        preConfirm: (value) => {
+          if (!value || value !== COMMON_PASSWORD) {
+            Swal.showValidationMessage('❌ Incorrect password');
+            return false;
+          }
+        }
+      }).then((res) => {
+        if (res.isConfirmed) {
+          window.open(filePath, '_blank');
+          Swal.fire({ icon: 'success', title: 'Download started', timer: 1000, showConfirmButton: false });
+        }
+      });
+    }
+
+    function promptPasswordAndDelete(username, isLocked) {
+      if (isLocked) {
+        Swal.fire({
+          title: 'Enter password to delete',
+          input: 'password',
+          inputPlaceholder: 'Password',
+          showCancelButton: true,
+          confirmButtonText: 'Delete',
+          allowOutsideClick: false,
+          preConfirm: (value) => {
+            if (!value || value !== COMMON_PASSWORD) {
+              Swal.showValidationMessage('❌ Incorrect password');
+              return false;
+            }
+          }
+        }).then((res) => {
+          if (res.isConfirmed) {
+            // trigger PHP deletion
+            window.location.href = '?delete=true&username=' + encodeURIComponent(username);
+          }
+        });
+      } else {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'This will permanently delete the file.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete',
+          cancelButtonText: 'Cancel',
+          allowOutsideClick: false
+        }).then((r) => {
+          if (r.isConfirmed) {
+            window.location.href = '?delete=true&username=' + encodeURIComponent(username);
+          }
+        });
+      }
+    }
+
+    function promptPasswordAndToggleLock(username, isLocked) {
+      if (isLocked) {
+        Swal.fire({
+          title: 'Enter password to unlock',
+          input: 'password',
+          inputPlaceholder: 'Password',
+          showCancelButton: true,
+          confirmButtonText: 'Unlock',
+          allowOutsideClick: false,
+          preConfirm: (value) => {
+            if (!value || value !== COMMON_PASSWORD) {
+              Swal.showValidationMessage('❌ Incorrect password');
+              return false;
+            }
+          }
+        }).then((res) => {
+          if (res.isConfirmed) {
+            window.location.href = '?lock_toggle=true&username=' + encodeURIComponent(username);
+          }
+        });
+      } else {
+        Swal.fire({
+          title: 'Lock file?',
+          text: 'Locking will require a password to download or delete this file.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Lock',
+          cancelButtonText: 'Cancel',
+          allowOutsideClick: false
+        }).then((r) => {
+          if (r.isConfirmed) {
+            window.location.href = '?lock_toggle=true&username=' + encodeURIComponent(username);
+          }
+        });
+      }
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 600, once: true });
+  </script>
 </body>
 </html>

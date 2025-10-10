@@ -1,541 +1,654 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CPShareTXT - Saved Texts</title>
   <link rel="icon" href="icontxt.webp" />
-  <title>CPShareTXT - Display Saved Data</title>
 
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap + icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Font Awesome for icons -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-  <!-- Animate.css for animations -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <!-- Lottie -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@1.5.7/dist/lottie-player.js"></script>
 
-  <!-- SweetAlert2 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet" />
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    /* FLEXBOX SETUP TO KEEP FOOTER AT BOTTOM */
-    html, body {
-      height: 100%;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-    }
+     <style>
+  :root{
+    --accent: #06b6d4;
+    --accent-2: #0891b2;
+    --muted: #9ca3af;
+    --bg-dark: linear-gradient(180deg,#041022 0%, #06122a 100%);
+    --panel-bg: rgba(255,255,255,0.03);
+    --card-radius: 18px;
+    --focus: rgba(6,182,212,0.25);
+    --max-width: 1120px;
+    --ui-ease: cubic-bezier(.2,.9,.2,1);
+  }
 
-    body {
-      min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      position: relative;
-      background-image: url('imageback.png');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      color: #f8f9fa;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-    }
+  /* --- Base --- */
+  body, html {
+    margin:0; padding:0; height:100%;
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    color:#e8f7fb;
+    background:radial-gradient(1000px 600px at 10% 10%, rgba(6,182,212,0.04), transparent), var(--bg-dark);
+    display:flex; flex-direction:column; transition: background .3s, color .3s;
+  }
 
-    /* Container main takes remaining space */
-    main.container {
-      flex-grow: 1;
-      min-height: calc(100vh - 60px);
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 14px;
-      padding: 30px 25px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-      margin-bottom: 50px;
-      color: #1a1a1a;
-    }
+  body.light { color:#06202a; background: linear-gradient(180deg,#f7fbff 0%, #eef6ff 100%); }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7);
-      z-index: -1;
-      backdrop-filter: blur(6px);
-    }
+  .app-container { max-width: var(--max-width); width:94%; margin:20px auto; flex:1; }
 
-    h2, h4 {
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #0c4a6e;
-      text-align: center;
-      letter-spacing: 0.03em;
-    }
+  /* --- Header --- */
+  header.d-flex { margin-bottom:18px; align-items:center; justify-content:space-between; gap:12px; }
+  .brand-title { font-size:1.2rem; font-weight:800; }
+  .brand-sub { font-size:.82rem; color:var(--muted); margin-top:2px; }
 
-    .instructions {
-      background-color: #e0f2fe;
-      border-left: 5px solid #0ea5e9;
-      padding: 20px 30px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-      color: #0c4a6e;
-      font-size: 1rem;
-      line-height: 1.5;
-      box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
-    }
+  nav a.muted { color: rgba(255,255,255,0.85); transition: color .2s; }
+  nav a.muted:hover { color: #fff; text-decoration:none; }
 
-    /* Buttons container */
-    #usernameButtons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-      gap: 16px;
-      margin-top: 20px;
-      justify-items: center;
-    }
+  .btn-outline-custom {
+    border:1px solid rgba(255,255,255,0.06); color:inherit; border-radius:0.7rem;
+    background:transparent; padding:.45rem .85rem; transition:.25s;
+  }
+  .btn-outline-custom:hover { background: rgba(255,255,255,0.06); transform:translateY(-2px); }
 
-    /* User button style */
-    .user-btn {
-      background: #0ea5e9;
-      color: white;
-      padding: 14px 18px;
-      font-weight: 600;
-      font-size: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(14, 165, 233, 0.6);
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      cursor: pointer;
-      border: none;
-      width: 100%;
-      text-align: center;
-      user-select: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .user-btn:hover {
-      background: #0284c7;
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(2, 132, 199, 0.8);
-    }
+  /* --- Cards --- */
+  .card-glass {
+    border-radius: var(--card-radius);
+    padding:20px;
+    background: linear-gradient(180deg, var(--panel-bg), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 20px 60px rgba(2,10,18,0.5);
+    transition: box-shadow .25s var(--ui-ease), background .25s var(--ui-ease);
+  }
+  body.light .card-glass { background: linear-gradient(180deg,#fff,#f7faff); border:1px solid rgba(2,6,23,0.05); box-shadow:0 10px 28px rgba(11,18,32,0.06); }
 
-    /* Text display box */
-    #textDisplay {
-      display: none;
-      background: #e0f2fe;
-      border-left: 5px solid #0ea5e9;
-      padding: 25px 20px;
-      margin-top: 30px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      line-height: 1.5;
-      box-shadow: 0 0 25px rgba(14, 165, 233, 0.35);
-      white-space: pre-wrap;
-      color: #0c4a6e;
-      max-height: 350px;
-      overflow-y: auto;
-    }
+  h2 { margin-bottom:14px; font-size:1.35rem; font-weight:700; }
 
-    /* Scroll to top button */
-    #scrollToTopBtn {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background-color: #0ea5e9;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      padding: 15px 18px;
-      font-size: 1.6rem;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(14, 165, 233, 0.6);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      z-index: 1100;
-    }
-    #scrollToTopBtn.show {
-      opacity: 1;
-      visibility: visible;
-    }
-    #scrollToTopBtn:hover {
-      background-color: #0284c7;
-      transform: scale(1.1);
-    }
+  .instructions {
+    background: rgba(255,255,255,0.03); border-left: 5px solid var(--accent);
+    padding:14px; margin:14px 0; border-radius:14px; color:#dff6fb;
+    font-size:.92rem; line-height:1.5;
+  }
+  body.light .instructions { background:#f0fbff; color:#08303a; }
 
-    /* Custom Buttons */
-    .btn-custom {
-      background-color: #0ea5e9;
-      color: white;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 12px 28px;
-      margin: 0 10px 20px 0;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 0 15px rgba(14, 165, 233, 0.6);
-      user-select: none;
-      text-decoration: none !important;
-      display: inline-block;
-    }
-    .btn-custom:hover {
-      background-color: #0284c7;
-      box-shadow: 0 0 25px rgba(2, 132, 199, 0.9);
-      text-decoration: none;
-      color: white !important;
-    }
+  /* --- Controls --- */
+  .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+  .search-input {
+    flex:1; min-width:160px; max-width:720px;
+    padding:.65rem 1rem; border-radius:.7rem; border:1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02); color:inherit; transition:.2s;
+  }
+  body.light .search-input { border-color: rgba(2,6,23,0.06); background:#fff; color:#06202a; }
 
-    /* Loading spinner */
-    #loadingSpinner {
-      display: none;
-      margin-top: 20px;
-      text-align: center;
-    }
+  .btn-primary-solid {
+    background: linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#042028; font-weight:700; border:none; padding:.65rem 1.2rem; border-radius:.7rem;
+    box-shadow:0 12px 36px rgba(6,182,212,0.08);
+    transition:.22s;
+  }
+  .btn-primary-solid:hover { transform:translateY(-2px); }
 
-    /* Navbar styles from first code */
-    .navbar {
-      background-color: #1e293b !important;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-      padding: 10px 0;
-      border-bottom: 3px solid #0ea5e9;
-    }
+  /* --- Records --- */
+  .records-list { display:flex; flex-direction:column; gap:14px; margin-top:14px; }
+  .record {
+    display:flex; gap:14px; align-items:flex-start; padding:16px;
+    border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03); cursor:pointer;
+    transition:.25s ease;
+  }
+  .record:hover, .record:focus { transform:translateY(-4px); box-shadow:0 28px 60px rgba(2,10,18,0.5); outline:none; }
 
-    .navbar-brand,
-    .navbar-nav .nav-link {
-      color: #f8f9fa !important;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      transition: color 0.3s ease;
-    }
+  .avatar { width:56px; height:56px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); font-weight:800; color:#042028; flex-shrink:0; font-size:.95rem; }
 
-    .navbar-nav .nav-link:hover,
-    .navbar-nav .nav-link.active {
-      color: #0ea5e9 !important;
-      font-weight: 700;
-      text-shadow: 0 0 10px #0ea5e9;
-    }
+  .rec-body { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .rec-head { display:flex; justify-content:space-between; align-items:flex-start; }
+  .rec-name { font-weight:700; font-size:1rem; color:#eaffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rec-time { font-size:.82rem; color:var(--muted); }
+  .rec-text { margin-top:10px; line-height:1.45; max-height:10rem; overflow:auto; white-space:pre-wrap; word-break:break-word; padding-right:6px; color:#cfeff7; }
 
-    .btn-admin {
-      transition: all 0.3s ease;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 6px 15px;
-      margin-left: 15px;
-      box-shadow: 0 0 5px transparent;
-      border: 2px solid transparent;
-      color: #f8f9fa !important;
-      background-color: transparent;
-    }
+  body.light .rec-name { color:#06202a; }
+  body.light .rec-time { color:#3f5963; }
+  body.light .rec-text { color:#18313a; }
 
-    .btn-admin:hover {
-      background-color: #0ea5e9 !important;
-      border-color: #0ea5e9 !important;
-      box-shadow: 0 0 15px #0ea5e9;
-      color: white !important;
-      text-decoration: none;
-    }
+  .rec-actions { display:flex; gap:8px; align-items:center; margin-left:8px; flex-shrink:0; flex-wrap:wrap; }
 
-    /* Footer styles from first code */
-    footer.footer-custom {
-      background: linear-gradient(135deg, #1e293b, #0ea5e9);
-      border-top: 3px solid #0284c7;
-      box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.1);
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: #f8f9fa; /* white text */
-      padding: 20px 0;
-      margin-top: 40px;
-      text-align: center;
-      user-select: none;
-      flex-shrink: 0;
-    }
+  .small-btn {
+    border-radius:12px; padding:.45rem .65rem; font-size:.9rem;
+    border:1px solid rgba(255,255,255,0.05); background:transparent; color:inherit;
+    display:flex; align-items:center; gap:.35rem; transition:.2s;
+  }
+  .small-btn:hover { transform:scale(1.05); }
 
-    footer.footer-custom p,
-    footer.footer-custom a {
-      color: #f8f9fa !important;
-      margin: 0;
-      transition: color 0.3s ease;
-      text-decoration: none;
-    }
+  .copy-btn { background: linear-gradient(135deg,#06b6d4,#0891b2); color:#042028; border:none; }
+  .view-btn { background: linear-gradient(135deg,#facc15,#f59e0b); color:#042028; border:none; }
+  .protect-btn { background: linear-gradient(135deg,#10b981,#059669); color:#fff; border:none; }
+  .btn-danger { background: linear-gradient(135deg,#dc2626,#b91c1c); color:#fff; border:none; }
 
-    footer.footer-custom a:hover,
-    footer.footer-custom a:focus {
-      color: #ffffff !important;
-      text-shadow: 0 0 8px #ffffff;
-      text-decoration: underline;
-    }
+  .protect-badge { background:#16a34a; color:#fff; padding:.25rem .5rem; border-radius:8px; font-weight:700; font-size:.82rem; }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .container-content {
-        margin-left: 10px;
-        margin-right: 10px;
-        padding: 20px 15px 30px 15px;
-      }
+  .loading-inline { display:flex; gap:10px; align-items:center; color:var(--muted); margin-top:10px; }
+  .empty { text-align:center; color:var(--muted); padding:20px 6px; font-size:.95rem; }
+
+  /* --- Scroll-to-top --- */
+  #scrollSide {
+    position:fixed; right:18px; bottom:18px; z-index:1200;
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(180deg,#072433,#0b3f51); color:#dff8fb;
+    padding:8px 14px; border-radius:999px;
+    box-shadow:0 12px 36px rgba(3,15,23,0.5);
+    transition:.25s; opacity:0; pointer-events:none; cursor:pointer;
+  }
+  #scrollSide.show { opacity:1; pointer-events:auto; }
+  #scrollSide .label { font-size:.88rem; font-weight:800; }
+  #scrollSide button { background:transparent; border:none; color:inherit; font-size:1.1rem; padding:6px; border-radius:8px; display:grid; place-items:center; }
+
+  /* --- Mobile adjustments --- */
+  @media (max-width:720px){
+    .record { flex-direction:column; padding:14px; }
+    .rec-text { max-height:6.4rem; }
+    .rec-actions {
+      flex-wrap: nowrap; overflow-x:auto; padding-top:6px; margin-left:0; gap:8px;
+      -webkit-overflow-scrolling: touch; scroll-behavior:smooth;
     }
+    .rec-actions::-webkit-scrollbar { height:4px; }
+    .rec-actions::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius:2px; }
+    .small-btn { flex-shrink:0; min-width:72px; justify-content:center; font-size:.9rem; padding:.55rem .8rem; border-radius:.65rem; }
+    .small-btn:active { transform: scale(0.94); }
+  }
+
+  /* --- Footer --- */
+  footer { margin-top:20px; text-align:center; }
+  footer .card-glass { display:inline-block; padding:16px 20px; border-radius:14px; }
+  footer .muted { color: rgba(255,255,255,0.85); font-size:.82rem; }
+  body.light footer .muted { color:#5b6b78; }
+
+  :focus { outline: 3px solid var(--focus); outline-offset:3px; border-radius:6px; }
   </style>
-</head>
-<body class="d-flex flex-column">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid px-4 px-md-5">
-      <a class="navbar-brand fw-bold fs-4" href="index.html">CP Share TXT</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-              data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-              aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-        <ul class="navbar-nav fs-6">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Submit Text</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="display_data.html">Saved Data</a>
-          </li>
+
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- NAV -->
+    <header class="d-flex align-items-center justify-content-between">
+      <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+        <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#0891b2);display:flex;align-items:center;justify-content:center;">
+          <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json" background="transparent" speed="1" style="width:40px;height:40px" loop autoplay></lottie-player>
+        </div>
+        <div>
+          <div class="brand-title">CP Share TXT</div>
+          <div class="brand-sub muted">Fast • Private • Free</div>
+        </div>
+      </a>
+
+      <nav class="d-flex align-items-center gap-2">
+        <div class="d-none d-sm-inline nav-cta muted">Free •</div>
+        <a href="display_data.html" class="text-decoration-none small px-2 py-1 rounded-2 muted">Saved</a>
+        <a href="feedback_form.html" class="text-decoration-none small px-2 py-1 rounded-2 muted">Feedback</a>
+        <a href="admin_panel.php" class="text-decoration-none small px-2 py-1 rounded-2 muted" style="background: rgba(255,255,255,0.03);">Admin</a>
+
+        <button id="themeToggle" class="btn btn-sm btn-outline-custom ms-2" aria-label="Toggle theme" title="Toggle light/dark">
+          <i id="themeIcon" class="bi bi-moon-fill"></i>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="card-glass" role="main" aria-labelledby="mainHeading" data-aos="fade-up">
+      <h2 id="mainHeading">Saved Texts</h2>
+
+      <div class="instructions" role="region" aria-label="User instructions">
+        <strong>Quick instructions</strong>
+        <ul style="margin:.5rem 0 0 1rem;color:#dff6fb">
+          <li>Click <strong>Display Texts</strong> to load all saved records (newest first).</li>
+          <li>Use buttons to <strong>View</strong> (open modal), <strong>Copy</strong>, <strong>Protect</strong>, or <strong>Delete</strong>.</li>
+          <li>Protected texts are kept up to 1 month; unprotected entries may auto-delete after ~5 minutes.</li>
         </ul>
-        <a class="btn btn-admin btn-outline-light" href="admin_panel.php">Admin Login</a>
+      </div>
+
+      <div class="controls" aria-hidden="false">
+        <input id="searchInput" class="search-input" type="search" placeholder="Search username or text (works while loading)" aria-label="Search records" />
+        <!-- Display Files button: navigates to backend.php -->
+        <button id="displayFilesBtn" class="btn btn-outline-custom" title="Display files (opens files page)"><i class="bi bi-folder2-open me-1"></i> Display Files</button>
+        <button id="displayTextsBtn" class="btn btn-primary-solid" title="Show saved texts"><i class="bi bi-card-text me-1"></i> Display Texts</button>
+        <button id="refreshBtn" class="btn btn-outline-custom" title="Refresh records"><i class="bi bi-arrow-clockwise"></i></button>
+      </div>
+
+      <div id="loadingRow" class="loading-inline" style="display:none">
+        <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+        <div id="loadingText" style="color:var(--muted)">Loading records…</div>
+      </div>
+
+      <div id="recordsList" class="records-list" aria-live="polite" aria-busy="false" tabindex="0"></div>
+      <div id="emptyState" class="empty" style="display:none">No saved texts found.</div>
+    </main>
+
+    <!-- Footer (your provided footer markup) -->
+    <footer class="mt-4 py-4 text-center">
+      <div class="card-glass d-inline-block p-3 rounded-3">
+        <div class="small muted mb-1">Made with Kavizz - CP Share TXT</div>
+        <div class="small muted">© <span id="footerYear"></span> • Team Alpha Software Solutions - Kavizz</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- modal overlay element -->
+  <div id="modalOverlay" aria-hidden="true"></div>
+
+  <!-- View modal -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:none;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="viewModalLabel">View full text</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="viewModalBody" style="white-space:pre-wrap;color:#dff9ff;max-height:60vh;overflow:auto;padding:1rem 1.25rem;"></div>
+        <div class="modal-footer border-0">
+          <button id="modalCopyBtn" class="small-btn" type="button"><i class="bi bi-clipboard"></i> Copy</button>
+          <button class="small-btn" type="button" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
-  </nav>
+  </div>
 
-  <!-- Main content -->
-  <main class="container container-content flex-grow-1">
-    <section class="instructions animate__animated animate__fadeInDown" role="region" aria-label="User Instructions">
-      <h4>User Instructions</h4>
-      <ul>
-        <li><strong>View Text:</strong> Click on the <strong>"Display Texts"</strong> button to view saved text entries as user buttons.</li>
-        <li><strong>View Files:</strong> Click on the <strong>"Display Files"</strong> button to see saved files.</li>
-        <li><strong>Delete Text:</strong> To delete a text entry, click the <span class="text-danger fw-bold">Delete</span> button next to the username. You will be asked to confirm the deletion.</li>
-        <li><strong>Protect Text:</strong> Use the <span class="text-success fw-bold">Protection Toggle</span> next to each entry to mark a text as <em>protected</em>. Protected texts are safe from auto-deletion for up to 1 month.</li>
-        <li><strong>Auto Deletion:</strong> Unprotected texts are automatically deleted after <span class="fw-bold">5 minutes</span> of saving. Protected texts are kept safe for up to <span class="fw-bold">1 month</span>, after which they will be deleted automatically.</li>
-        <li><strong>Copy Text:</strong> Use the <span class="btn btn-sm btn-outline-primary py-0 px-1">Copy</span> button to copy text to your clipboard quickly.</li>
-        <li><strong>View Details:</strong> Click on a username button to view the full text details below.</li>
-      </ul>
-    </section>
+  <!-- Scroll-to-top bottom-right pill -->
+  <div id="scrollSide" role="button" aria-label="Scroll to top" title="Scroll to top" tabindex="0">
+    <div class="label" aria-hidden="true">TOP</div>
+    <button id="scrollBtn" aria-hidden="true"><i class="bi bi-arrow-up-short"></i></button>
+  </div>
 
-    <section class="mt-4 text-center">
-      <button id="displayTextsBtn" class="btn-custom animate__animated animate__pulse animate__infinite">Display Texts</button>
-      <a href="backend.php" class="btn-custom">Display Files</a>
-    </section>
-
-    <section id="loadingSpinner" aria-live="polite" aria-busy="true" class="mt-4">
-      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </section>
-
-    <section id="usernameButtons" class="mt-4 animate__animated"></section>
-
-    <section id="textDisplay" tabindex="0" aria-label="User text details" class="animate__animated"></section>
-  </main>
-
-  <!-- Scroll to Top Button -->
-  <button id="scrollToTopBtn" aria-label="Scroll to top">↑</button>
-
-  <!-- Footer -->
-  <footer class="footer-custom">
-    <p>Developer: <a href="https://your-website.com" target="_blank" rel="noopener noreferrer">Kavizz</a> | All Rights Reserved © 2025</p>
-  </footer>
-
-  <!-- JS Dependencies -->
+  <!-- libs -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
   <script>
-    $(document).ready(function() {
-      const $loadingSpinner = $('#loadingSpinner');
-      const $usernameButtons = $('#usernameButtons');
-      const $textDisplay = $('#textDisplay');
-      const $displayTextsBtn = $('#displayTextsBtn');
-      const $scrollBtn = $('#scrollToTopBtn');
+    AOS.init({ duration:380, once:true });
 
-      // Show/hide scroll-to-top button
-      $(window).on('scroll', () => {
-        if ($(window).scrollTop() > 150) {
-          $scrollBtn.addClass('show animate__animated animate__fadeIn');
-        } else {
-          $scrollBtn.removeClass('show animate__fadeOut');
+    // ENDPOINTS
+    const API_JSON = 'load_data_json.php';
+    const API_HTML = 'load_data.php';
+    const API_DELETE = 'delete_data.php';
+    const API_PROTECT = 'update_protection.php';
+
+    // ELEMENTS
+    const displayTextsBtn = document.getElementById('displayTextsBtn');
+    const displayFilesBtn = document.getElementById('displayFilesBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const searchInput = document.getElementById('searchInput');
+    const recordsList = document.getElementById('recordsList');
+    const loadingRow = document.getElementById('loadingRow');
+    const loadingText = document.getElementById('loadingText');
+    const emptyState = document.getElementById('emptyState');
+    const modalEl = document.getElementById('viewModal');
+    const viewModal = new bootstrap.Modal(modalEl);
+    const viewModalBody = document.getElementById('viewModalBody');
+    const modalCopyBtn = document.getElementById('modalCopyBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const scrollSide = document.getElementById('scrollSide');
+    const scrollBtn = document.getElementById('scrollBtn');
+    const footerYear = document.getElementById('footerYear');
+
+    // STATE
+    let records = [];
+    let loaded = false;
+    let lastFilter = '';
+
+    footerYear.textContent = new Date().getFullYear();
+
+    // UTILS
+    function esc(s){ return s==null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+    function humanDate(sql){
+      if(!sql) return '';
+      try { const d = new Date(sql.replace(' ', 'T') + 'Z'); if (isNaN(d)) return sql; return d.toLocaleString(); } catch { return sql; }
+    }
+
+    // overlay
+    function setOverlay(open){
+      const isLight = document.body.classList.contains('light');
+      if (open) {
+        modalOverlay.style.display = 'block';
+        modalOverlay.style.pointerEvents = 'auto';
+        modalOverlay.style.opacity = '0';
+        modalOverlay.style.zIndex = 1040;
+        modalOverlay.style.backgroundColor = isLight ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)';
+        requestAnimationFrame(()=> modalOverlay.style.opacity = '1');
+      } else {
+        modalOverlay.style.opacity = '0';
+        modalOverlay.style.pointerEvents = 'none';
+        setTimeout(()=> modalOverlay.style.display = 'none', 220);
+      }
+    }
+
+    // build record node
+    function buildRecordNode(item, idx){
+      const node = document.createElement('div');
+      node.className = 'record';
+      node.tabIndex = 0;
+      node.dataset.idx = idx;
+      node.innerHTML = `
+        <div class="avatar" aria-hidden="true">${esc((item.username||'U').split(' ').map(p=>p[0]||'').slice(0,2).join('').toUpperCase())}</div>
+        <div class="rec-body">
+          <div class="rec-head">
+            <div>
+              <div class="rec-name" title="${esc(item.username)}">${esc(item.username)}</div>
+              <div class="rec-time">${esc(humanDate(item.saved_at))}</div>
+            </div>
+            <div>${item.is_protected ? '<span class="protect-badge">Protected</span>' : ''}</div>
+          </div>
+          <div class="rec-text">${esc(item.preview || (item.fulltext||'').slice(0,800))}</div>
+        </div>
+        <div class="rec-actions" role="group" aria-label="Actions">
+          <button class="small-btn copy-btn" data-idx="${idx}" title="Copy"><i class="bi bi-clipboard"></i></button>
+          <button class="small-btn view-btn" data-idx="${idx}" title="View"><i class="bi bi-eye"></i></button>
+          <button class="small-btn protect-btn ${item.is_protected ? 'protected' : ''}" data-idx="${idx}" title="Protect">${item.is_protected ? 'Protected' : 'Protect'}</button>
+          <button class="small-btn btn-danger delete-btn" data-idx="${idx}" title="Delete"><i class="bi bi-trash"></i></button>
+        </div>
+      `;
+      node.setAttribute('data-aos','fade-up');
+      return node;
+    }
+
+    // render list
+    function renderList(){
+      recordsList.innerHTML = '';
+      let list = records.slice();
+      list.sort((a,b) => (new Date(b.saved_at).getTime()||0) - (new Date(a.saved_at).getTime()||0));
+      const q = (lastFilter || '').trim().toLowerCase();
+      if (q) list = list.filter(it => ((it.username||'') + ' ' + (it.fulltext||'')).toLowerCase().includes(q));
+      if (!list.length) { emptyState.style.display = 'block'; return; } else emptyState.style.display = 'none';
+      list.forEach(r => {
+        const originalIndex = records.indexOf(r);
+        const node = buildRecordNode(r, originalIndex);
+        recordsList.appendChild(node);
+      });
+      AOS.refresh();
+    }
+
+    // try JSON then HTML fallback
+    async function loadRecords(){
+      loadingRow.style.display = 'flex';
+      recordsList.setAttribute('aria-busy','true');
+      try {
+        const res = await fetch(API_JSON, { cache: 'no-store' });
+        if (!res.ok) throw new Error('JSON not available');
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('JSON not array');
+        records = data.map(it => ({
+          username: it.username || it.name || 'Anonymous',
+          fulltext: it.fulltext ?? it.text ?? it.content ?? '',
+          preview: it.preview ?? ((it.fulltext ?? it.text ?? '').slice(0,800)),
+          is_protected: Number(it.is_protected || it.protected || 0),
+          saved_at: it.saved_at ?? it.created_at ?? ''
+        }));
+        loaded = true;
+        loadingRow.style.display = 'none';
+        renderList();
+      } catch (jsonErr) {
+        try {
+          const res2 = await fetch(API_HTML, { cache: 'no-store' });
+          if (!res2.ok) throw new Error('HTML not available');
+          const html = await res2.text();
+          const parsed = parseHtmlTable(html);
+          records = parsed.map(it => ({
+            username: it.username,
+            fulltext: it.fulltext,
+            preview: it.preview,
+            is_protected: it.is_protected ? 1 : 0,
+            saved_at: it.saved_at
+          }));
+          loaded = true;
+          loadingRow.style.display = 'none';
+          renderList();
+        } catch (htmlErr) {
+          console.error('Load failed', jsonErr, htmlErr);
+          loadingRow.style.display = 'none';
+          records = [];
+          renderList();
+          Swal.fire({ icon:'error', title:'Could not load records', text:'Server returned an error or no data.' });
         }
-      });
+      } finally {
+        recordsList.setAttribute('aria-busy','false');
+      }
+    }
 
-      // Scroll to top smooth
-      $scrollBtn.click(() => {
-        $('html, body').animate({ scrollTop: 0 }, 600);
-      });
-
-      // Load and show user buttons
-      function loadUserButtons() {
-        $loadingSpinner.show();
-        $textDisplay.hide().removeClass('animate__fadeInUp');
-        $usernameButtons.removeClass('animate__fadeInUp').empty();
-
-        $.ajax({
-          url: 'load_data.php',
-          type: 'GET',
-          dataType: 'html',
-          success: function(data) {
-            if (!data.trim()) {
-              Swal.fire({
-                icon: 'info',
-                title: 'No Data',
-                text: 'No saved texts available at the moment.',
-              });
-              $loadingSpinner.hide();
-              return;
-            }
-            $usernameButtons.html(data).addClass('animate__fadeInUp');
-            $loadingSpinner.hide();
-          },
-          error: function(xhr, status, error) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error loading data',
-              text: error,
-            });
-            $loadingSpinner.hide();
+    function parseHtmlTable(htmlString){
+      try {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = htmlString;
+        const rows = tmp.querySelectorAll('tbody tr');
+        if (!rows || rows.length === 0) return [];
+        const items = [];
+        rows.forEach(row => {
+          const usernameSpan = row.querySelector('.username-link') || row.querySelector('[data-username]');
+          let username = '', fulltext = '';
+          if (usernameSpan) {
+            username = usernameSpan.getAttribute('data-username') || usernameSpan.textContent.trim();
+            fulltext = usernameSpan.getAttribute('data-fulltext') || usernameSpan.getAttribute('title') || usernameSpan.textContent.trim();
+          } else {
+            const first = row.querySelector('td');
+            username = first ? first.textContent.trim() : 'Anonymous';
           }
+          const protectInput = row.querySelector('input[type="checkbox"].protect-toggle');
+          const isProtected = protectInput ? protectInput.checked : false;
+          const savedAtCell = row.querySelector('td:nth-child(3)') || row.querySelector('.badge');
+          const savedAt = savedAtCell ? savedAtCell.textContent.trim() : '';
+          const previewCell = row.querySelector('td:nth-child(2)');
+          const preview = previewCell ? previewCell.textContent.trim() : (fulltext || '').slice(0,800);
+          items.push({ username, fulltext, preview, is_protected: isProtected ? 1 : 0, saved_at: savedAt });
         });
+        return items;
+      } catch (e) {
+        console.error('parseHtmlTable error', e);
+        return [];
+      }
+    }
+
+    // Copy helper with fallback
+    async function copyToClipboard(text) {
+      if (!text) return false;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (e) {}
+      }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly','');
+        ta.style.position = 'absolute';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const ok = document.execCommand('copy');
+        ta.remove();
+        return !!ok;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // Action delegation
+    document.addEventListener('click', async (ev) => {
+      // Copy
+      const copyBtn = ev.target.closest('.copy-btn');
+      if (copyBtn) {
+        if (!loaded) { Swal.fire({ icon:'info', title:'Load first', text:'Click Display Texts to load records.' }); return; }
+        const idx = Number(copyBtn.dataset.idx);
+        const it = records[idx];
+        const ok = await copyToClipboard(it.fulltext);
+        if (ok) Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Copied to clipboard', showConfirmButton:false, timer:1200, timerProgressBar:true });
+        else Swal.fire({ icon:'error', title:'Copy failed', text:'Your browser refused the copy action.' });
+        return;
       }
 
-      // Display text on username button click
-      $usernameButtons.on('click', '.username-link', function() {
-        const username = $(this).text();
-        const text = $(this).data('text');
+      // View
+      const viewBtn = ev.target.closest('.view-btn');
+      if (viewBtn) {
+        if (!loaded) { Swal.fire({ icon:'info', title:'Load first', text:'Click Display Texts to load records.' }); return; }
+        const idx = Number(viewBtn.dataset.idx);
+        const it = records[idx];
+        viewModalBody.textContent = it.fulltext;
+        setOverlay(true);
+        viewModal.show();
+        return;
+      }
 
-        $textDisplay.hide();
-        $textDisplay.html(`<h4>Text details for <span class="text-primary">${escapeHtml(username)}</span>:</h4><p>${escapeHtml(text)}</p>`);
-        $textDisplay.show().addClass('animate__fadeInUp').focus();
-      });
+      // Protect
+      const protectBtn = ev.target.closest('.protect-btn');
+      if (protectBtn) {
+        if (!loaded) { Swal.fire({ icon:'info', title:'Load first', text:'Click Display Texts to load records.' }); return; }
+        const idx = Number(protectBtn.dataset.idx);
+        const it = records[idx];
+        const newStatus = it.is_protected ? 0 : 1;
+        it.is_protected = newStatus;
+        renderList(); // optimistic
+        try {
+          const form = new URLSearchParams();
+          form.append('username', it.username);
+          form.append('is_protected', newStatus);
+          const resp = await fetch(API_PROTECT, { method:'POST', body: form });
+          const j = await resp.json();
+          if (!j || j.status !== 'success') {
+            it.is_protected = newStatus ? 0 : 1;
+            renderList();
+            Swal.fire({ icon:'error', title:'Update failed', text:(j && j.message) ? j.message : 'Server error' });
+          } else {
+            Swal.fire({ toast:true, position:'top-end', icon:'success', title: newStatus ? 'Protected' : 'Unprotected', showConfirmButton:false, timer:1100, timerProgressBar:true });
+          }
+        } catch (err) {
+          it.is_protected = newStatus ? 0 : 1;
+          renderList();
+          Swal.fire({ icon:'error', title:'Network error', text:'Could not update protection' });
+        }
+        return;
+      }
 
-      // Copy text to clipboard on copy button click
-      $usernameButtons.on('click', '.copy-btn', function() {
-        const textToCopy = $(this).data('text');
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: 'Copied to clipboard!',
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-          });
-        }).catch(err => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Copy failed',
-            text: err,
-          });
-        });
-      });
-
-      // Delete text entry on delete button click with confirmation
-      $usernameButtons.on('click', '.delete-btn', function() {
-        const username = $(this).data('username');
-        const $btn = $(this);
-        Swal.fire({
-          title: `Delete entry for "${username}"?`,
+      // Delete
+      const delBtn = ev.target.closest('.delete-btn');
+      if (delBtn && delBtn.closest('.record')) {
+        if (!loaded) { Swal.fire({ icon:'info', title:'Load first', text:'Click Display Texts to load records.' }); return; }
+        const idx = Number(delBtn.dataset.idx);
+        const it = records[idx];
+        const conf = await Swal.fire({
+          title: `Delete "${it.username}"?`,
           text: "This action cannot be undone.",
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Yes, delete it!',
-          reverseButtons: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $.ajax({
-              url: 'delete_data.php',
-              type: 'POST',
-              dataType: 'json',
-              data: { delete_username: username },
-              success: function(res) {
-                if (res.status === 'success') {
-                  // Remove the deleted user's button(s)
-                  $btn.closest('.user-btn-wrapper').remove();
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Deleted!',
-                    text: res.message || 'The entry has been deleted.',
-                    timer: 2000,
-                    showConfirmButton: false,
-                  });
-
-                  // Clear text display if showing deleted user
-                  const displayedUser = $textDisplay.find('span.text-primary').text();
-                  if (displayedUser === username) {
-                    $textDisplay.hide().empty();
-                  }
-                } else {
-                  Swal.fire('Error', res.message || 'Deletion failed.', 'error');
-                }
-              },
-              error: function() {
-                Swal.fire('Error', 'Unable to delete entry.', 'error');
-              }
-            });
-          }
+          confirmButtonText: 'Delete',
+          confirmButtonColor: '#d33'
         });
-      });
-
-      // Protection toggle button logic (optional: toggle UI and send to backend)
-      $usernameButtons.on('click', '.protect-btn', function() {
-        const username = $(this).data('username');
-        const $btn = $(this);
-        // Toggle UI state
-        const isProtected = $btn.hasClass('btn-success');
-        const newStatus = !isProtected;
-
-        // Optionally send AJAX request to update protection status in backend here
-        // For demo, just toggle button appearance
-        if (newStatus) {
-          $btn.removeClass('btn-outline-success').addClass('btn-success').text('Protected');
-        } else {
-          $btn.removeClass('btn-success').addClass('btn-outline-success').text('Protect');
+        if (conf.isConfirmed) {
+          try {
+            const form = new URLSearchParams();
+            form.append('delete_username', it.username);
+            const res = await fetch(API_DELETE, { method:'POST', body: form });
+            const j = await res.json();
+            if (j && j.status === 'success') {
+              records = records.filter(r => !(r.username === it.username && r.saved_at === it.saved_at));
+              renderList();
+              Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Deleted', showConfirmButton:false, timer:1100, timerProgressBar:true });
+            } else {
+              Swal.fire({ icon:'error', title:'Delete failed', text:(j && j.message) ? j.message : 'Server error' });
+            }
+          } catch (err) {
+            Swal.fire({ icon:'error', title:'Network error', text:'Could not delete entry' });
+          }
         }
-      });
-
-      // === VIEW BUTTON FUNCTIONALITY ===
-      $usernameButtons.on('click', '.view-details-btn', function () {
-        const fullText = $(this).data('fulltext');
-        const username = $(this).data('username');
-
-        const escapedUsername = escapeHtml(username);
-        const escapedText = escapeHtml(fullText);
-
-        const viewHtml = `
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h4 class="mb-0">Full Text for <span class="text-primary">${escapedUsername}</span>:</h4>
-            <button class="btn btn-outline-danger btn-sm close-view" aria-label="Close View">
-              <i class="fas fa-times"></i> Close
-            </button>
-          </div>
-          <div class="bg-light border p-3 rounded" style="white-space: pre-wrap; color: #212529;">${escapedText}</div>
-        `;
-
-        $textDisplay
-          .html(viewHtml)
-          .show()
-          .addClass('animate__fadeInUp')
-          .focus();
-      });
-
-      // Close view text section
-      $textDisplay.on('click', '.close-view', function () {
-        $textDisplay.hide().empty();
-      });
-
-      // Utility function: escape HTML to prevent XSS
-      function escapeHtml(text) {
-        return text
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
+        return;
       }
-
-      // Initial load of user buttons when page loads
-      $displayTextsBtn.on('click', loadUserButtons);
     });
+
+    // modal copy
+    modalCopyBtn.addEventListener('click', async () => {
+      const txt = viewModalBody.textContent || '';
+      const ok = await copyToClipboard(txt);
+      if (ok) Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Copied', showConfirmButton:false, timer:1000, timerProgressBar:true });
+      else Swal.fire({ icon:'error', title:'Copy failed' });
+    });
+
+    // modal overlay handling
+    modalEl.addEventListener('shown.bs.modal', () => setOverlay(true));
+    modalEl.addEventListener('hidden.bs.modal', () => setOverlay(false));
+
+    // search live
+    searchInput.addEventListener('input', (e) => {
+      lastFilter = e.target.value || '';
+      if (loaded) renderList();
+    });
+
+    // display texts button
+    displayTextsBtn.addEventListener('click', () => {
+      if (!loaded) loadRecords();
+      else Swal.fire({ icon:'info', title:'Records already loaded', text:'Use Refresh to reload from server.' });
+    });
+
+    // refresh button
+    refreshBtn.addEventListener('click', () => {
+      if (!loaded) Swal.fire({ icon:'info', title:'Load first', text:'Click Display Texts to load records.' });
+      else loadRecords();
+    });
+
+    // display files button navigates to backend.php
+    displayFilesBtn.addEventListener('click', () => {
+      window.location.href = 'backend.php';
+    });
+
+    // theme handling
+    function applyTheme() {
+      const stored = localStorage.getItem('cp_theme');
+      if (stored) {
+        if (stored === 'light') document.body.classList.add('light'); else document.body.classList.remove('light');
+      } else {
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        if (prefersLight) document.body.classList.add('light');
+      }
+      if (document.body.classList.contains('light')) document.getElementById('themeIcon').className = 'bi bi-moon-fill';
+      else document.getElementById('themeIcon').className = 'bi bi-sun-fill';
+      if (document.querySelector('.modal.show')) setOverlay(true);
+    }
+    applyTheme();
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      const isLight = document.body.classList.contains('light');
+      localStorage.setItem('cp_theme', isLight ? 'light' : 'dark');
+      document.getElementById('themeIcon').className = isLight ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+    });
+
+    // scroll button behavior
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 160) scrollSide.classList.add('show'); else scrollSide.classList.remove('show');
+    });
+    scrollSide.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+    scrollSide.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.scrollTo({ top:0, behavior:'smooth' }); } });
+
+    // keyboard nav: Enter opens record
+    recordsList.addEventListener('keydown', (e) => {
+      const rec = e.target.closest('.record');
+      if (!rec) return;
+      if (e.key === 'Enter') {
+        const idx = Number(rec.dataset.idx);
+        if (records[idx]) {
+          viewModalBody.textContent = records[idx].fulltext;
+          viewModal.show();
+        }
+      }
+    });
+
+    // initial states
+    searchInput.value = '';
   </script>
 </body>
 </html>
