@@ -71,5 +71,5 @@ CPShareTXT/
 
 ### 🪄 1. Clone the Repository
 ```bash
-git clone https://github.com/kavizzz03/CPShareTXT.git
+git clone https://github.com/kavizzz03/CPShareTxt_WebSite.git
 cd CPShareTXT
