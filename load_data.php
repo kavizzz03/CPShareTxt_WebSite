@@ -14,97 +14,82 @@ $sql = "SELECT username, text, saved_at, is_protected FROM user_texts ORDER BY s
 $result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saved Data Viewer — CP Share TXT</title>
-    <link rel="icon" href="icontxt.webp" type="image/webp" />
+    <title>Saved Data Table — CPShare TXT</title>
+    <link rel="icon" href="logo.png" type="image/png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-    <style>
-        body {
-            background: #030812;
-            color: #f1f5f9;
-            font-family: system-ui, -apple-system, sans-serif;
-            padding: 2rem 1rem;
-        }
-        .card-style {
-            background: rgba(10, 22, 40, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        }
-        table { color: #f1f5f9 !important; }
-        .table-hover tbody tr:hover { background: rgba(6, 182, 212, 0.06); }
-        .text-preview {
-            max-width: 450px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<body class="p-3 p-md-4">
+<div class="app-container" style="max-width: 1100px; margin: 0 auto;">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h2 class="fw-bold mb-1"><i class="bi bi-clock-history text-info me-2"></i>User Saved Texts</h2>
-            <div class="text-secondary small">CP Share TXT Ephemeral Storage</div>
+            <h2 class="h4 fw-bold mb-1"><i class="bi bi-clock-history text-info me-2"></i>Saved Texts Vault</h2>
+            <div class="small text-muted">CPShare TXT Active Ephemeral Records</div>
         </div>
-        <a href="display_data.html" class="btn btn-outline-info btn-sm"><i class="bi bi-arrow-left me-1"></i> Interactive View</a>
+        <div class="d-flex gap-2">
+            <a href="display_data.html" class="btn-brand-primary btn-sm"><i class="bi bi-grid-fill me-1"></i> Interactive Cards View</a>
+            <a href="index.html" class="btn-brand-outline btn-sm"><i class="bi bi-house-door-fill me-1"></i> Home</a>
+        </div>
     </div>
 
-    <div class="card-style table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>Username</th>
-                    <th>Text Preview</th>
-                    <th>Saved At</th>
-                    <th>Protected</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($result && $result->num_rows > 0): ?>
-                    <?php while ($row = $result->fetch_assoc()):
-                        $isChecked = $row['is_protected'] ? 'checked' : '';
-                        $fullText = htmlspecialchars($row['text'] ?? '');
-                        $username = htmlspecialchars($row['username'] ?? 'Anonymous');
-                        $savedAt = htmlspecialchars($row['saved_at'] ?? '');
-                        $preview = htmlspecialchars(mb_strimwidth($row['text'] ?? '', 0, 80, "..."));
-                    ?>
+    <div class="glass-panel p-3 p-md-4">
+        <div class="table-responsive">
+            <table class="app-table">
+                <thead>
                     <tr>
-                        <td>
-                            <span class="username-link text-info fw-bold"
-                                  style="cursor:pointer;"
-                                  data-fulltext="<?= $fullText ?>"
-                                  data-username="<?= $username ?>"><?= $username ?></span>
-                        </td>
-                        <td class="text-preview" title="<?= $fullText ?>"><?= $preview ?></td>
-                        <td><span class="badge bg-secondary"><?= $savedAt ?></span></td>
-                        <td>
-                            <input type="checkbox" class="protect-toggle" data-username="<?= $username ?>" <?= $isChecked ?> disabled />
-                            <span class="small ms-1 <?= $row['is_protected'] ? 'text-success' : 'text-muted' ?>">
-                                <?= $row['is_protected'] ? 'Protected' : 'Auto-purge' ?>
-                            </span>
-                        </td>
-                        <td>
-                            <a href="display_data.html" class="btn btn-outline-info btn-sm"><i class="bi bi-eye"></i> View</a>
-                        </td>
+                        <th>Student / Alias</th>
+                        <th>Text & Code Preview</th>
+                        <th>Saved At</th>
+                        <th>Protection Status</th>
+                        <th class="text-end">Action</th>
                     </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <tr><td colspan="5" class="text-center text-muted py-4">No records found.</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php if ($result && $result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()):
+                            $fullText = htmlspecialchars($row['text'] ?? '');
+                            $username = htmlspecialchars($row['username'] ?? 'Anonymous');
+                            $savedAt = htmlspecialchars($row['saved_at'] ?? '');
+                            $isProtected = (bool)$row['is_protected'];
+                            $preview = htmlspecialchars(mb_strimwidth($row['text'] ?? '', 0, 120, "..."));
+                        ?>
+                        <tr>
+                            <td data-label="Student">
+                                <span class="username-link text-info fw-bold"
+                                      style="cursor:pointer;"
+                                      data-fulltext="<?= $fullText ?>"
+                                      data-username="<?= $username ?>"><i class="bi bi-person-fill me-1"></i><?= $username ?></span>
+                            </td>
+                            <td data-label="Preview" style="font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: #f1f5f9 !important;" title="<?= $fullText ?>">
+                                <?= $preview ?>
+                            </td>
+                            <td data-label="Saved At">
+                                <span class="record-meta-pill"><i class="bi bi-calendar-event text-info me-1"></i><?= $savedAt ?></span>
+                            </td>
+                            <td data-label="Status">
+                                <?php if ($isProtected): ?>
+                                    <span class="badge-glow-success"><i class="bi bi-shield-check me-1"></i> Protected</span>
+                                <?php else: ?>
+                                    <span class="badge-glow-warning"><i class="bi bi-hourglass-split me-1"></i> 5m Purge</span>
+                                <?php endif; ?>
+                            </td>
+                            <td data-label="Action" class="text-end">
+                                <a href="display_data.html" class="btn btn-sm btn-outline-info"><i class="bi bi-eye me-1"></i> View</a>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr><td colspan="5" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>No saved text records found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>
 </html>
-<?php
-$conn->close();
-?>
