@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Saved Texts & Records — CpShare TXT</title>
+
+  <!-- Primary Meta Tags -->
+  <meta name="description" content="CpShare TXT — Manage, view, search, protect, or purge your secure ephemeral text notes and code sharing history." />
+  <meta name="author" content="Kavindu Bogahawatte — Vexel IT, Colombo, Sri Lanka" />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="canonical" href="https://cpsharetxt.com/display_data.html" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="logo.png" type="image/png" />
+  <meta name="theme-color" content="#0056d2">
+
+  <!-- Bootstrap 5, Icons, AOS, SweetAlert2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Unified Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- FLOATING SITE HEADER (RESPONSIVE) -->
+    <header class="site-header" data-aos="fade-down" data-aos-duration="600">
+      <div class="site-navbar">
+        <a href="index.html" class="brand-wrapper">
+          <img src="logo.png" alt="CpShare TXT Student Sharing Platform" class="brand-img" />
+        </a>
+
+        <!-- Mobile Hamburger Toggle -->
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <!-- Nav Links (Desktop & Mobile Drawer) -->
+        <nav class="nav-links-wrap" id="navLinksWrap">
+          <a href="index.html" class="nav-pill"><i class="bi bi-house-door-fill"></i> Home</a>
+          <a href="display_data.html" class="nav-pill active"><i class="bi bi-clock-history"></i> Saved Texts</a>
+          <a href="backend.php" class="nav-pill"><i class="bi bi-folder-fill"></i> Files Vault</a>
+          <a href="about.html" class="nav-pill"><i class="bi bi-info-circle-fill"></i> About Us</a>
+          <a href="feedback_form.html" class="nav-pill d-none d-sm-inline-flex"><i class="bi bi-chat-heart-fill"></i> Feedback</a>
+          <a href="admin_panel.php" class="nav-pill"><i class="bi bi-gear-wide-connected"></i> Admin</a>
+
+          <button id="themeToggle" class="theme-btn" aria-label="Toggle dark/light theme" title="Toggle Theme">
+            <i id="themeIcon" class="bi bi-sun-fill"></i>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- MAIN RECORDS VIEWER -->
+    <main class="glass-panel mb-5" data-aos="fade-up">
+      
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <div>
+          <h2 class="h4 fw-bold mb-1"><i class="bi bi-journal-code text-info me-2"></i>Saved Text & Code Records</h2>
+          <div class="small text-muted">Active Ephemeral Storage Vault • Notes, Scripts & Code</div>
+        </div>
+        <span class="badge-glow-info">
+          <i class="bi bi-shield-shaded me-1"></i> Vexel IT Secure Node
+        </span>
+      </div>
+
+      <!-- Quick Guidelines -->
+      <div class="p-3 rounded-3 mb-4" style="background: rgba(0, 210, 255, 0.08); border-left: 4px solid var(--brand-cyan);">
+        <div class="small fw-bold text-info mb-1"><i class="bi bi-info-circle-fill me-1"></i> Quick Guidelines:</div>
+        <ul class="small text-muted mb-0 ps-3">
+          <li>Unprotected text snippets auto-purge after <strong>5 minutes</strong>.</li>
+          <li>Toggle <strong>Protect</strong> to preserve critical study notes or homework scripts for up to <strong>30 days</strong>.</li>
+          <li>Click <strong>Copy</strong> or <strong>View</strong> to read or copy the full payload instantly.</li>
+        </ul>
+      </div>
+
+      <!-- Controls & Search Filter -->
+      <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
+        <div class="flex-grow-1 position-relative" style="min-width: 240px;">
+          <input id="searchInput" class="form-control-custom ps-4" type="search" placeholder="Search by student alias, subject, or code snippet..." />
+          <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted ms-2 ps-1"></i>
+        </div>
+        <button id="displayFilesBtn" class="btn-brand-outline"><i class="bi bi-folder2-open me-1"></i> Files Vault</button>
+        <button id="refreshBtn" class="btn-brand-primary"><i class="bi bi-arrow-clockwise me-1"></i> Refresh Records</button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingRow" class="d-flex align-items-center gap-2 text-muted py-3" style="display: none;">
+        <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+        <div class="small">Retrieving records from database...</div>
+      </div>
+
+      <!-- Records Container -->
+      <div id="recordsList" class="d-flex flex-column gap-3"></div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="text-center py-5 text-muted" style="display: none;">
+        <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+        No saved texts found in the active session.
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- View Full Modal -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content glass-panel border border-secondary border-opacity-25 shadow-lg p-0">
+        <div class="modal-header border-bottom border-secondary border-opacity-20 p-3">
+          <h5 class="modal-title fw-bold" id="viewModalLabel"><i class="bi bi-file-text text-info me-2"></i>Full Record Payload</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3">
+          <pre id="viewModalBody" class="p-3 rounded-3 m-0" style="background: rgba(0,0,0,0.4); font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; max-height: 60vh; overflow: auto; white-space: pre-wrap; word-break: break-word; color: #ffffff; border: 1px solid var(--border-glass);"></pre>
+        </div>
+        <div class="modal-footer border-top border-secondary border-opacity-20 p-3">
+          <button id="modalCopyBtn" class="btn-brand-primary" type="button"><i class="bi bi-clipboard me-1"></i> Copy Payload</button>
+          <button class="btn-brand-outline" type="button" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ULTRA-PROFESSIONAL FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4 pb-4">
+        <!-- Col 1: Brand & Mission -->
+        <div class="col-12 col-lg-5">
+          <a href="index.html" class="d-inline-block text-decoration-none">
+            <img src="logo.png" alt="CpShare TXT" class="footer-logo-img" />
+          </a>
+          <p class="text-muted small mb-3 pe-lg-4" style="line-height: 1.7;">
+            <strong>CpShare TXT</strong> is a free, fast, and secure student sharing platform engineered for university students, school children, and educators to exchange study notes, research docs, and code snippets effortlessly without registration.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="maintainer-pill">
+              <span class="status-dot"></span>
+              <span>Maintained by <strong>Vexel IT</strong></span>
+            </div>
+            <span class="badge-glow-success">
+              <i class="bi bi-mortarboard-fill me-1"></i> 100% Free For Education
+            </span>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation -->
+        <div class="col-6 col-sm-3 col-lg-2">
+          <div class="footer-heading"><i class="bi bi-grid-fill text-info"></i> Navigation</div>
+          <ul class="footer-links-list">
+            <li><a href="index.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Home</a></li>
+            <li><a href="display_data.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Saved Texts</a></li>
+            <li><a href="backend.php" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Files Vault</a></li>
+            <li><a href="about.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> About Us</a></li>
+            <li><a href="feedback_form.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Feedback</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Features -->
+        <div class="col-6 col-sm-3 col-lg-2">
+          <div class="footer-heading"><i class="bi bi-lightning-charge-fill text-info"></i> Capabilities</div>
+          <ul class="footer-links-list">
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> 5m Auto-Purge</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> 25MB Payload</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> 30-Day Protect</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> Vault Lock</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> Zero Tracking</span></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Creator & Maintainer -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="footer-heading"><i class="bi bi-award-fill text-info"></i> Engineering & Origin</div>
+          <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass);">
+            <div class="small fw-bold text-info mb-1">Kavindu Bogahawatte</div>
+            <div class="small text-muted mb-2">Designed in 1st year Software Engineering undergrad. 1st live deployment in December 2024.</div>
+            <div class="border-top border-secondary border-opacity-10 pt-2 d-flex justify-content-between align-items-center">
+              <span class="small text-muted"><i class="bi bi-geo-alt-fill text-info me-1"></i> Colombo, Sri Lanka</span>
+              <a href="mailto:info.vexelit@gmail.com" class="text-info small text-decoration-none" title="Email Vexel IT"><i class="bi bi-envelope-at-fill"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          © <span id="footerYear"></span> <strong>CpShare TXT</strong>. All rights reserved. Built for learners worldwide.
+        </div>
+        <div>
+          Designed & Developed by <strong class="text-info">Kavindu Bogahawatte</strong> • Maintained by <strong class="text-info">Vexel IT</strong>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  (function(){
+    AOS.init({ duration: 700, once: true });
+
+    /* Theme Management */
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(isLight){
+      if (isLight){
+        htmlEl.classList.remove('dark');
+        htmlEl.classList.add('light');
+        document.body.classList.add('light');
+        if (themeIcon) themeIcon.className = 'bi bi-moon-stars-fill';
+      } else {
+        htmlEl.classList.remove('light');
+        htmlEl.classList.add('dark');
+        document.body.classList.remove('light');
+        if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('cp_theme');
+    applyTheme(savedTheme === 'light');
+
+    if (themeToggle){
+      themeToggle.addEventListener('click', () => {
+        const isLightNow = document.body.classList.contains('light');
+        applyTheme(!isLightNow);
+        localStorage.setItem('cp_theme', !isLightNow ? 'light' : 'dark');
+      });
+    }
+
+    /* Mobile Nav Toggle */
+    const mobileToggle = document.getElementById('mobileNavToggle');
+    const navLinks = document.getElementById('navLinksWrap');
+    if (mobileToggle && navLinks){
+      mobileToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+        const icon = mobileToggle.querySelector('i');
+        if (icon){
+          if (navLinks.classList.contains('show')){
+            icon.className = 'bi bi-x-lg';
+          } else {
+            icon.className = 'bi bi-list';
+          }
+        }
+      });
+    }
+
+    const yearEl = document.getElementById('footerYear');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    // API ENDPOINTS
+    const API_JSON = 'load_data_json.php';
+    const API_HTML = 'load_data.php';
+    const API_DELETE = 'delete_data.php';
+    const API_PROTECT = 'update_protection.php';
+
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const recordsList = document.getElementById('recordsList');
+    const loadingRow = document.getElementById('loadingRow');
+    const emptyState = document.getElementById('emptyState');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const displayFilesBtn = document.getElementById('displayFilesBtn');
+    const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
+    const viewModalBody = document.getElementById('viewModalBody');
+    const modalCopyBtn = document.getElementById('modalCopyBtn');
+
+    let records = [];
+    let lastFilter = '';
+
+    displayFilesBtn.addEventListener('click', () => {
+      window.location.href = 'backend.php';
+    });
+
+    refreshBtn.addEventListener('click', () => loadRecords());
+
+    function esc(s){ return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    function buildRecordCard(item, idx){
+      const card = document.createElement('div');
+      card.className = 'glass-card-sm d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 p-3';
+      card.innerHTML = `
+        <div class="d-flex align-items-start gap-3 flex-grow-1 min-w-0" style="overflow: hidden; width: 100%;">
+          <div class="drag-icon-circle m-0 flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.1rem;">
+            <i class="bi bi-file-earmark-code"></i>
+          </div>
+          <div class="min-w-0" style="overflow: hidden; width: 100%;">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <strong class="text-info text-truncate">${esc(item.username)}</strong>
+              ${item.is_protected ? '<span class="badge-glow-success"><i class="bi bi-shield-check me-1"></i> Protected</span>' : '<span class="badge-glow-warning"><i class="bi bi-hourglass-split me-1"></i> 5m Purge</span>'}
+            </div>
+            <div class="small text-muted font-monospace text-truncate mb-1" style="max-width: 600px;">
+              ${esc(item.preview || item.fulltext)}
+            </div>
+            <div class="small text-muted" style="font-size: 0.76rem;">
+              <i class="bi bi-clock me-1"></i> ${esc(item.saved_at)}
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-shrink-0 w-100 w-md-auto justify-content-start justify-content-md-end flex-wrap pt-2 pt-md-0">
+          <button class="btn btn-sm btn-outline-info copy-btn" data-idx="${idx}" title="Copy Text"><i class="bi bi-clipboard"></i> Copy</button>
+          <button class="btn btn-sm btn-outline-primary view-btn" data-idx="${idx}" title="View Full"><i class="bi bi-eye"></i> View</button>
+          <button class="btn btn-sm ${item.is_protected ? 'btn-outline-warning' : 'btn-outline-success'} protect-btn" data-idx="${idx}" title="Toggle Protection">
+            <i class="bi ${item.is_protected ? 'bi-shield-slash' : 'bi-shield-check'}"></i> ${item.is_protected ? 'Unprotect' : 'Protect'}
+          </button>
+          <button class="btn btn-sm btn-outline-danger delete-btn" data-idx="${idx}" title="Delete Record"><i class="bi bi-trash"></i></button>
+        </div>
+      `;
+      return card;
+    }
+
+    function renderRecords(){
+      recordsList.innerHTML = '';
+      let list = records.slice();
+      const q = (lastFilter || '').trim().toLowerCase();
+      if (q){
+        list = list.filter(r => (r.username + ' ' + r.fulltext).toLowerCase().includes(q));
+      }
+      if (!list.length){
+        emptyState.style.display = 'block';
+        return;
+      } else {
+        emptyState.style.display = 'none';
+      }
+      list.forEach(r => {
+        const idx = records.indexOf(r);
+        recordsList.appendChild(buildRecordCard(r, idx));
+      });
+    }
+
+    async function loadRecords(){
+      loadingRow.style.display = 'flex';
+      try {
+        const res = await fetch(API_JSON, { cache: 'no-store' });
+        if (!res.ok) throw new Error('API failed');
+        const data = await res.json();
+        records = data.map(it => ({
+          username: it.username || 'Anonymous',
+          fulltext: it.fulltext || it.text || '',
+          preview: it.preview || (it.fulltext || '').slice(0, 300),
+          is_protected: Number(it.is_protected || 0),
+          saved_at: it.saved_at || ''
+        }));
+        loadingRow.style.display = 'none';
+        renderRecords();
+      } catch (e) {
+        try {
+          const res2 = await fetch(API_HTML, { cache: 'no-store' });
+          const html = await res2.text();
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          const rows = doc.querySelectorAll('tbody tr');
+          records = [];
+          rows.forEach(r => {
+            const userSpan = r.querySelector('.username-link');
+            if (userSpan){
+              records.push({
+                username: userSpan.getAttribute('data-username') || userSpan.textContent.trim(),
+                fulltext: userSpan.getAttribute('data-fulltext') || '',
+                preview: userSpan.getAttribute('data-fulltext') ? userSpan.getAttribute('data-fulltext').slice(0, 300) : '',
+                is_protected: r.querySelector('.text-success') ? 1 : 0,
+                saved_at: r.querySelector('.badge') ? r.querySelector('.badge').textContent.trim() : ''
+              });
+            }
+          });
+          loadingRow.style.display = 'none';
+          renderRecords();
+        } catch (err){
+          loadingRow.style.display = 'none';
+          Swal.fire({ icon: 'error', title: 'Loading Error', text: 'Could not fetch records.' });
+        }
+      }
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      lastFilter = e.target.value;
+      renderRecords();
+    });
+
+    document.addEventListener('click', async (e) => {
+      // Copy
+      const copyBtn = e.target.closest('.copy-btn');
+      if (copyBtn){
+        const idx = Number(copyBtn.dataset.idx);
+        const item = records[idx];
+        navigator.clipboard.writeText(item.fulltext);
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied to clipboard!', showConfirmButton: false, timer: 1200 });
+        return;
+      }
+
+      // View
+      const viewBtn = e.target.closest('.view-btn');
+      if (viewBtn){
+        const idx = Number(viewBtn.dataset.idx);
+        const item = records[idx];
+        viewModalBody.textContent = item.fulltext;
+        viewModal.show();
+        return;
+      }
+
+      // Protect Toggle
+      const protectBtn = e.target.closest('.protect-btn');
+      if (protectBtn){
+        const idx = Number(protectBtn.dataset.idx);
+        const item = records[idx];
+        const newStatus = item.is_protected ? 0 : 1;
+        item.is_protected = newStatus;
+        renderRecords();
+
+        const form = new URLSearchParams();
+        form.append('username', item.username);
+        form.append('is_protected', newStatus);
+
+        try {
+          const res = await fetch(API_PROTECT, { method: 'POST', body: form });
+          const j = await res.json();
+          if (j.status === 'success'){
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: newStatus ? 'Record Protected' : 'Protection Removed', showConfirmButton: false, timer: 1200 });
+          } else {
+            item.is_protected = newStatus ? 0 : 1;
+            renderRecords();
+            Swal.fire({ icon: 'error', title: 'Update Failed', text: j.message });
+          }
+        } catch(err){
+          item.is_protected = newStatus ? 0 : 1;
+          renderRecords();
+          Swal.fire({ icon: 'error', title: 'Network Error' });
+        }
+        return;
+      }
+
+      // Delete
+      const delBtn = e.target.closest('.delete-btn');
+      if (delBtn){
+        const idx = Number(delBtn.dataset.idx);
+        const item = records[idx];
+        const conf = await Swal.fire({
+          title: `Delete "${item.username}"?`,
+          text: 'This will permanently remove the record.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Delete',
+          confirmButtonColor: '#ef4444'
+        });
+
+        if (conf.isConfirmed){
+          const form = new URLSearchParams();
+          form.append('delete_username', item.username);
+          try {
+            const res = await fetch(API_DELETE, { method: 'POST', body: form });
+            const j = await res.json();
+            if (j.status === 'success'){
+              records.splice(idx, 1);
+              renderRecords();
+              Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Record Deleted', showConfirmButton: false, timer: 1200 });
+            } else {
+              Swal.fire({ icon: 'error', title: 'Delete Failed', text: j.message });
+            }
+          } catch(err){
+            Swal.fire({ icon: 'error', title: 'Network Error' });
+          }
+        }
+        return;
+      }
+    });
+
+    modalCopyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(viewModalBody.textContent);
+      Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied to clipboard!', showConfirmButton: false, timer: 1200 });
+    });
+
+    loadRecords();
+  })();
+  </script>
+</body>
+</html>

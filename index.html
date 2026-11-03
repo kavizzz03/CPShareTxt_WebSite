@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CpShare TXT — Student Sharing Platform | Notes, Documents & Code</title>
+
+  <!-- Primary Meta Tags -->
+  <meta name="description" content="CpShare TXT is the premier student sharing platform designed for university students & school children. Share study notes, research documents, and code snippets up to 25MB for free with zero logins." />
+  <meta name="author" content="Kavindu Bogahawatte — Vexel IT, Colombo, Sri Lanka" />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="canonical" href="https://cpsharetxt.com/" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="logo.png" type="image/png" />
+  <meta name="theme-color" content="#0056d2">
+
+  <!-- Bootstrap 5, Icons, AOS, SweetAlert2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Unified Creative Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- FLOATING SITE HEADER (RESPONSIVE) -->
+    <header class="site-header" data-aos="fade-down" data-aos-duration="600">
+      <div class="site-navbar">
+        <a href="index.html" class="brand-wrapper">
+          <img src="logo.png" alt="CpShare TXT Student Sharing Platform" class="brand-img" />
+        </a>
+
+        <!-- Mobile Hamburger Toggle -->
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <!-- Nav Links (Desktop & Mobile Drawer) -->
+        <nav class="nav-links-wrap" id="navLinksWrap">
+          <a href="index.html" class="nav-pill active"><i class="bi bi-house-door-fill"></i> Home</a>
+          <a href="display_data.html" class="nav-pill"><i class="bi bi-clock-history"></i> Saved Texts</a>
+          <a href="backend.php" class="nav-pill"><i class="bi bi-folder-fill"></i> Files Vault</a>
+          <a href="about.html" class="nav-pill"><i class="bi bi-info-circle-fill"></i> About Us</a>
+          <a href="feedback_form.html" class="nav-pill"><i class="bi bi-chat-heart-fill"></i> Feedback</a>
+          <a href="admin_panel.php" class="nav-pill"><i class="bi bi-gear-wide-connected"></i> Admin</a>
+
+          <button id="themeToggle" class="theme-btn" aria-label="Toggle dark/light theme" title="Toggle Theme">
+            <i id="themeIcon" class="bi bi-sun-fill"></i>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO & INTERACTIVE SHARING SUITE -->
+    <main class="row g-4 align-items-stretch mb-5">
+
+      <!-- Left Column: Vision & Highlights -->
+      <section class="col-12 col-lg-7 d-flex flex-column justify-content-between">
+        <div class="glass-panel h-100 d-flex flex-column justify-content-between" data-aos="fade-up">
+          
+          <div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge-student">
+                <i class="bi bi-mortarboard-fill"></i> Student Sharing Platform
+              </span>
+              <span class="badge-glow-success">
+                <i class="bi bi-shield-fill-check"></i> 100% Free Forever
+              </span>
+            </div>
+
+            <h1 class="display-5 fw-extrabold mb-3" style="letter-spacing: -1.5px; line-height: 1.15;">
+              Share Study Notes, Documents & Code — <span class="gradient-title">Instantly in Seconds.</span>
+            </h1>
+
+            <p class="text-muted lead fs-6 mb-4" style="line-height: 1.75;">
+              Built specifically for <strong>university undergraduates, school students, and coding labs</strong>. Share assignment drafts, lecture summaries, Python/Java/C++ code, or files up to <strong>25 MB</strong> with instant shareable links. No mandatory logins, no ads, and full ephemeral security.
+            </p>
+
+            <!-- Metrics Highlight Grid -->
+            <div class="row row-cols-3 g-2 g-sm-3 mb-4">
+              <div class="col">
+                <div class="glass-card-sm text-center">
+                  <div class="fs-4 fw-bold gradient-title">5 Min</div>
+                  <div class="text-muted small mt-1">Auto-Purge Timer</div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="glass-card-sm text-center">
+                  <div class="fs-4 fw-bold gradient-title">25 MB</div>
+                  <div class="text-muted small mt-1">File Upload Cap</div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="glass-card-sm text-center">
+                  <div class="fs-4 fw-bold text-success">Zero</div>
+                  <div class="text-muted small mt-1">Tracking / Ads</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons & Origin Attribution -->
+          <div>
+            <div class="d-flex flex-wrap gap-3 mb-4">
+              <a href="#sharingStudio" class="btn-brand-primary">
+                <i class="bi bi-lightning-charge-fill"></i> Start Sharing Now
+              </a>
+              <a href="about.html" class="btn-brand-outline">
+                <i class="bi bi-info-circle"></i> Learn Our Story
+              </a>
+            </div>
+
+            <div class="pt-3 border-top border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center gap-2 small text-muted">
+              <div>
+                <i class="bi bi-code-slash text-info me-1"></i> Created by <strong class="text-info">Kavindu Bogahawatte</strong> (SE Undergrad)
+              </div>
+              <div>
+                <i class="bi bi-shield-lock-fill text-primary me-1"></i> Maintained by <strong class="text-primary">Vexel IT</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive Sharing Terminal -->
+      <section id="sharingStudio" class="col-12 col-lg-5">
+        <div class="glass-panel" data-aos="fade-left">
+          
+          <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom border-secondary border-opacity-20">
+            <div>
+              <h3 class="h5 fw-bold mb-0">Create Sharing Session</h3>
+              <div class="small text-muted">Instant Link Generation Gateway</div>
+            </div>
+            <span class="badge-glow-info">
+              <i class="bi bi-stopwatch-fill"></i> 5m Timer
+            </span>
+          </div>
+
+          <form id="userForm" enctype="multipart/form-data" method="POST" novalidate>
+            
+            <!-- Alias / Subject -->
+            <div class="mb-3">
+              <label for="username" class="form-label-custom">Display Alias / Subject (Optional)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-secondary text-info"><i class="bi bi-person-badge"></i></span>
+                <input id="username" name="username" type="text" placeholder="e.g. CS204_LabAssignment" class="form-control-custom ps-2" />
+              </div>
+            </div>
+
+            <!-- Payload Selector Switcher -->
+            <div class="mb-3">
+              <label for="inputType" class="form-label-custom">Payload Type</label>
+              <select id="inputType" name="inputType" class="form-select-custom">
+                <option value="text">📝 Study Notes, Text & Code Snippet</option>
+                <option value="file">📁 Document, PDF, ZIP or Media File (Max 25MB)</option>
+              </select>
+            </div>
+
+            <!-- Text & Code Snippet Area -->
+            <div id="textInputSection" class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label for="userText" class="form-label-custom mb-0">Content / Code</label>
+                <div id="charCount" class="small text-muted font-monospace">0 / 10000</div>
+              </div>
+              <textarea id="userText" name="userText" rows="6" maxlength="10000" placeholder="Paste lecture notes, homework questions, Python/Java scripts, or markdown here..." class="form-control-custom"></textarea>
+            </div>
+
+            <!-- Drag & Drop File Upload Area -->
+            <div id="fileInputSection" class="mb-3 d-none">
+              <label class="form-label-custom">Upload Document / File</label>
+              <div id="dragDropArea" class="drag-upload-zone" tabindex="0" role="button">
+                <div class="drag-icon-circle">
+                  <i class="bi bi-cloud-arrow-up-fill"></i>
+                </div>
+                <div id="dragText" class="fw-bold small text-main">Drag & drop files here or click to browse</div>
+                <div id="dragHint" class="text-muted small">PDF, DOCX, ZIP, Code, Media • Max 25 MB</div>
+
+                <div id="dragPreview" class="d-none mt-2 w-100 p-2 rounded text-start" style="background: rgba(0, 210, 255, 0.15); border: 1px solid var(--border-glass);">
+                  <div id="dragPreviewName" class="small fw-bold text-truncate text-info mb-1"></div>
+                  <img id="dragPreviewThumb" src="" alt="Preview" class="img-fluid rounded d-none" style="max-height: 100px;" />
+                </div>
+              </div>
+              <input id="userFile" name="userFile" type="file" class="d-none" />
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-4 d-flex gap-2">
+              <button type="submit" class="btn-brand-primary flex-grow-1 py-2">
+                <i class="bi bi-link-45deg fs-5"></i> Generate Secure Link
+              </button>
+              <button type="button" id="clearBtn" class="btn-brand-outline px-3" title="Clear form">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+            </div>
+
+            <div class="mt-3 small text-muted text-center">
+              <i class="bi bi-shield-check text-info me-1"></i> Content auto-destructs after 5 minutes unless protected.
+            </div>
+
+          </form>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- EDUCATIONAL PILLARS & USE CASES -->
+    <section class="mb-5" data-aos="fade-up">
+      <div class="text-center mb-4">
+        <span class="badge-student mb-2"><i class="bi bi-compass-fill"></i> Why Students Love CpShare TXT</span>
+        <h2 class="fw-bold">Designed to Remove Classroom & Lab Friction</h2>
+        <p class="text-muted small mx-auto" style="max-width: 620px;">
+          Built from real student experiences in software engineering labs and university lecture rooms.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-4">
+          <div class="glass-card-sm h-100 p-4">
+            <div class="drag-icon-circle mb-3"><i class="bi bi-terminal-fill"></i></div>
+            <h4 class="h5 fw-bold mb-2">Campus Computer Labs</h4>
+            <p class="text-muted small mb-0" style="line-height: 1.65;">
+              Passing code or assignment files between institutional lab PCs and personal laptops without signing into personal Google/social media accounts on public machines.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="glass-card-sm h-100 p-4">
+            <div class="drag-icon-circle mb-3"><i class="bi bi-book-half"></i></div>
+            <h4 class="h5 fw-bold mb-2">Lecture Notes Sharing</h4>
+            <p class="text-muted small mb-0" style="line-height: 1.65;">
+              Share comprehensive exam preparation notes, summarized slides, and revision cheat-sheets with your entire batch or study group with one quick link.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="glass-card-sm h-100 p-4">
+            <div class="drag-icon-circle mb-3"><i class="bi bi-backpack-fill"></i></div>
+            <h4 class="h5 fw-bold mb-2">School Homework & Projects</h4>
+            <p class="text-muted small mb-0" style="line-height: 1.65;">
+              School children and teachers can exchange project briefs, reading lists, and worksheet files effortlessly with zero subscription costs or advertisements.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION BANNER -->
+    <section class="glass-panel text-center p-4 p-md-5 mb-5" data-aos="fade-up">
+      <div class="d-inline-block mb-3">
+        <img src="logo.png" alt="CpShare TXT" style="height: 52px; object-fit: contain;" />
+      </div>
+      <h3 class="fw-bold mb-2">Ready to share your notes or code?</h3>
+      <p class="text-muted mb-4 mx-auto" style="max-width: 600px;">
+        Jump straight in. No registration, no passwords required to start — just paste, generate your link, and pass it on.
+      </p>
+      <div class="d-flex justify-content-center flex-wrap gap-3">
+        <a href="#sharingStudio" class="btn-brand-primary px-4"><i class="bi bi-send-fill me-2"></i> Create Share Session</a>
+        <a href="display_data.html" class="btn-brand-outline px-4"><i class="bi bi-archive me-1"></i> Browse Saved Texts</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ULTRA-PROFESSIONAL FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4 pb-4">
+        <!-- Col 1: Brand & Mission -->
+        <div class="col-12 col-lg-5">
+          <a href="index.html" class="d-inline-block text-decoration-none">
+            <img src="logo.png" alt="CpShare TXT" class="footer-logo-img" />
+          </a>
+          <p class="text-muted small mb-3 pe-lg-4" style="line-height: 1.7;">
+            <strong>CpShare TXT</strong> is a free, fast, and secure student sharing platform engineered for university students, school children, and educators to exchange study notes, research docs, and code snippets effortlessly without registration.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="maintainer-pill">
+              <span class="status-dot"></span>
+              <span>Maintained by <strong>Vexel IT</strong></span>
+            </div>
+            <span class="badge-glow-success">
+              <i class="bi bi-mortarboard-fill me-1"></i> 100% Free For Education
+            </span>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation -->
+        <div class="col-6 col-sm-3 col-lg-2">
+          <div class="footer-heading"><i class="bi bi-grid-fill text-info"></i> Navigation</div>
+          <ul class="footer-links-list">
+            <li><a href="index.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Home</a></li>
+            <li><a href="display_data.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Saved Texts</a></li>
+            <li><a href="backend.php" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Files Vault</a></li>
+            <li><a href="about.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> About Us</a></li>
+            <li><a href="feedback_form.html" class="footer-link-item"><i class="bi bi-chevron-right small text-info"></i> Feedback</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Features -->
+        <div class="col-6 col-sm-3 col-lg-2">
+          <div class="footer-heading"><i class="bi bi-lightning-charge-fill text-info"></i> Capabilities</div>
+          <ul class="footer-links-list">
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> 5m Auto-Purge</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> 25MB Payload</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> 30-Day Protect</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> Vault Lock</span></li>
+            <li><span class="footer-link-item text-muted"><i class="bi bi-check2 text-info"></i> Zero Tracking</span></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Creator & Maintainer -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="footer-heading"><i class="bi bi-award-fill text-info"></i> Engineering & Origin</div>
+          <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass);">
+            <div class="small fw-bold text-info mb-1">Kavindu Bogahawatte</div>
+            <div class="small text-muted mb-2">Designed in 1st year Software Engineering undergrad. 1st live deployment in December 2024.</div>
+            <div class="border-top border-secondary border-opacity-10 pt-2 d-flex justify-content-between align-items-center">
+              <span class="small text-muted"><i class="bi bi-geo-alt-fill text-info me-1"></i> Colombo, Sri Lanka</span>
+              <a href="mailto:info.vexelit@gmail.com" class="text-info small text-decoration-none" title="Email Vexel IT"><i class="bi bi-envelope-at-fill"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          © <span id="footerYear"></span> <strong>CpShare TXT</strong>. All rights reserved. Built for learners worldwide.
+        </div>
+        <div>
+          Designed & Developed by <strong class="text-info">Kavindu Bogahawatte</strong> • Maintained by <strong class="text-info">Vexel IT</strong>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  (function(){
+    AOS.init({ duration: 700, once: true });
+
+    /* Theme Management */
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(isLight){
+      if (isLight){
+        htmlEl.classList.remove('dark');
+        htmlEl.classList.add('light');
+        document.body.classList.add('light');
+        if (themeIcon) themeIcon.className = 'bi bi-moon-stars-fill';
+      } else {
+        htmlEl.classList.remove('light');
+        htmlEl.classList.add('dark');
+        document.body.classList.remove('light');
+        if (themeIcon) themeIcon.className = 'bi bi-sun-fill';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('cp_theme');
+    applyTheme(savedTheme === 'light');
+
+    if (themeToggle){
+      themeToggle.addEventListener('click', () => {
+        const isLightNow = document.body.classList.contains('light');
+        applyTheme(!isLightNow);
+        localStorage.setItem('cp_theme', !isLightNow ? 'light' : 'dark');
+      });
+    }
+
+    /* Mobile Nav Toggle */
+    const mobileToggle = document.getElementById('mobileNavToggle');
+    const navLinks = document.getElementById('navLinksWrap');
+    if (mobileToggle && navLinks){
+      mobileToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+        const icon = mobileToggle.querySelector('i');
+        if (icon){
+          if (navLinks.classList.contains('show')){
+            icon.className = 'bi bi-x-lg';
+          } else {
+            icon.className = 'bi bi-list';
+          }
+        }
+      });
+    }
+
+    const yearEl = document.getElementById('footerYear');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    /* Form Mode Switcher */
+    const form = document.getElementById('userForm');
+    const inputType = document.getElementById('inputType');
+    const textSection = document.getElementById('textInputSection');
+    const fileSection = document.getElementById('fileInputSection');
+    const userText = document.getElementById('userText');
+    const charCount = document.getElementById('charCount');
+    const userFile = document.getElementById('userFile');
+    const dragDropArea = document.getElementById('dragDropArea');
+    const dragText = document.getElementById('dragText');
+    const dragPreview = document.getElementById('dragPreview');
+    const dragPreviewName = document.getElementById('dragPreviewName');
+    const dragPreviewThumb = document.getElementById('dragPreviewThumb');
+    const clearBtn = document.getElementById('clearBtn');
+    const maxFileSize = 25 * 1024 * 1024; // 25 MB
+
+    function updateFormMode(openPicker = true){
+      if (inputType.value === 'text'){
+        form.action = 'save_text.php';
+        textSection.classList.remove('d-none');
+        fileSection.classList.add('d-none');
+        userFile.value = '';
+        resetDragPreview();
+      } else {
+        form.action = 'save_file.php';
+        textSection.classList.add('d-none');
+        fileSection.classList.remove('d-none');
+        userText.value = '';
+        charCount.textContent = '0 / 10000';
+        if (openPicker){
+          setTimeout(() => userFile.click(), 100);
+        }
+      }
+    }
+
+    inputType.addEventListener('change', () => updateFormMode(true));
+    updateFormMode(false);
+
+    userText.addEventListener('input', () => {
+      charCount.textContent = `${userText.value.length} / 10000`;
+    });
+
+    /* Drag & Drop */
+    ['dragenter', 'dragover'].forEach(e => dragDropArea.addEventListener(e, (ev) => { ev.preventDefault(); dragDropArea.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(e => dragDropArea.addEventListener(e, (ev) => { ev.preventDefault(); dragDropArea.classList.remove('dragover'); }));
+
+    dragDropArea.addEventListener('click', () => userFile.click());
+
+    dragDropArea.addEventListener('drop', (ev) => {
+      const files = ev.dataTransfer.files;
+      if (!files || !files.length) return;
+      const file = files[0];
+      if (file.size > maxFileSize){
+        Swal.fire({ icon: 'error', title: 'File Too Large', text: 'Maximum allowed upload size is 25 MB.' });
+        return;
+      }
+      userFile.files = files;
+      showPreview(file);
+    });
+
+    userFile.addEventListener('change', () => {
+      if (!userFile.files || !userFile.files.length){ resetDragPreview(); return; }
+      const file = userFile.files[0];
+      if (file.size > maxFileSize){
+        Swal.fire({ icon: 'error', title: 'File Too Large', text: 'Maximum allowed upload size is 25 MB.' });
+        userFile.value = '';
+        resetDragPreview();
+        return;
+      }
+      showPreview(file);
+    });
+
+    function showPreview(file){
+      dragPreview.classList.remove('d-none');
+      dragPreviewName.textContent = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+      dragText.textContent = 'File attached ready to share';
+      if (file.type.startsWith('image/')){
+        dragPreviewThumb.src = URL.createObjectURL(file);
+        dragPreviewThumb.classList.remove('d-none');
+      } else {
+        dragPreviewThumb.classList.add('d-none');
+      }
+    }
+
+    function resetDragPreview(){
+      dragPreview.classList.add('d-none');
+      dragPreviewName.textContent = '';
+      dragPreviewThumb.src = '';
+      dragText.textContent = 'Drag & drop files here or click to browse';
+      userFile.value = '';
+    }
+
+    clearBtn.addEventListener('click', () => {
+      form.reset();
+      updateFormMode(false);
+      resetDragPreview();
+      charCount.textContent = '0 / 10000';
+    });
+
+    /* Form Submit via AJAX */
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const isText = inputType.value === 'text';
+      if (isText && !userText.value.trim()){
+        Swal.fire({ icon: 'warning', title: 'Content Required', text: 'Please enter notes or code before generating link.' });
+        return;
+      }
+      if (!isText && (!userFile.files || !userFile.files.length)){
+        Swal.fire({ icon: 'warning', title: 'File Required', text: 'Please select a document or file to share.' });
+        return;
+      }
+
+      Swal.fire({
+        title: 'Generating Share Session...',
+        html: '<div class="spinner-border text-info mt-2" role="status"></div>',
+        showConfirmButton: false,
+        allowOutsideClick: false
+      });
+
+      const formData = new FormData(form);
+
+      try {
+        const resp = await fetch(form.action, { method: 'POST', body: formData });
+        const data = await resp.json();
+
+        if (data.success || data.status === 'success'){
+          const shareUrl = window.location.origin + (data.filePath ? '/' + data.filePath : '/display_data.html');
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Share Session Created!',
+            html: `
+              <p class="small text-muted mb-2">${data.message || 'Payload stored successfully.'}</p>
+              <div class="input-group mb-2">
+                <input type="text" id="swalShareLink" class="form-control-custom" value="${shareUrl}" readonly>
+                <button class="btn-brand-primary" id="swalCopyBtn"><i class="bi bi-clipboard"></i> Copy</button>
+              </div>
+              <small class="text-muted d-block"><i class="bi bi-clock-history me-1"></i>Auto-destructs after 5 minutes.</small>
+            `,
+            confirmButtonText: 'Done',
+            didOpen: () => {
+              document.getElementById('swalCopyBtn').addEventListener('click', () => {
+                const linkInput = document.getElementById('swalShareLink');
+                linkInput.select();
+                navigator.clipboard.writeText(linkInput.value);
+                Swal.showValidationMessage('✅ Link copied to clipboard!');
+              });
+            }
+          });
+
+          form.reset();
+          updateFormMode(false);
+          resetDragPreview();
+        } else {
+          Swal.fire({ icon: 'error', title: 'Sharing Failed', text: data.message || 'Server error occurred.' });
+        }
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Network Error', text: 'Could not connect to server. Check connection.' });
+      }
+    });
+
+  })();
+  </script>
+</body>
+</html>
