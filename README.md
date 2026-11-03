@@ -1,92 +1,143 @@
-# 🌐 CPShareTXT — Smart & Free Content Sharing Platform for Students
+<div align="center">
 
-**CPShareTXT** is a lightweight, modern, and privacy-first web platform tailored for **university students, school children, and developers** to easily share **study notes, research documents, programming code snippets, and classroom assignments**.
+  <img src="logo.png" alt="CpShare TXT Banner" width="460" />
 
-Designed for speed, simplicity, and zero friction — like Pastebin, but tailored for learning communities with ephemeral self-destruction, 25MB file sharing, and robust vault locks.
+  # 🌐 CPShareTXT — Student Sharing Platform
+
+  **Free, Ephemeral & Secure Content Sharing Web Application Tailored for Education**
+
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+  [![Release: Dec 2024](https://img.shields.io/badge/First%20Release-December%202024-cyan.svg)](#-creator--genesis)
+  [![Maintained by Vexel IT](https://img.shields.io/badge/Maintained%20By-Vexel%20IT-00d2ff.svg)](#-maintenance--scaling)
+  [![PHP Version](https://img.shields.io/badge/PHP-7.4%20%7C%208.x-777bb4.svg?logo=php)](https://www.php.net/)
+  [![Database](https://img.shields.io/badge/Database-MySQL-4479A1.svg?logo=mysql)](https://www.mysql.com/)
+  [![Bootstrap](https://img.shields.io/badge/UI-Bootstrap%205%20%2B%20Custom%20Glass-7952B3.svg?logo=bootstrap)](https://getbootstrap.com/)
+
+  <p align="center">
+    <a href="#-about-the-project">About</a> •
+    <a href="#-key-features">Features</a> •
+    <a href="#-architecture">Architecture</a> •
+    <a href="#-quick-start">Quick Start</a> •
+    <a href="#-creator--genesis">Creator Story</a> •
+    <a href="#-license">License</a>
+  </p>
+
+</div>
 
 ---
 
-## 👨‍💻 Creator & History
-- **Original Designer & Developer:** **Kavindu Bogahawatte**
-- **Background:** Created during his 2nd year as an undergraduate Software Engineering student.
-- **Milestone:** His **1st deployed live project** in **December 2024**.
-- **Current System Maintainer:** Officially maintained and scaled by **Vexel IT**, Colombo, Sri Lanka.
+## 📖 About The Project
+
+**CPShareTXT** is a lightweight, high-performance web platform engineered specifically for **university undergraduates, school children, coding labs, and educators**. It solves a daily classroom headache: quickly transferring lecture notes, homework files, research documents, and programming source code across computers without logging into personal social media or Google accounts on public workstations.
+
+### 🎯 Primary Beneficiaries
+- 🎓 **University Undergraduates:** Share code snippets, SQL dumps, and lecture summaries during lab practicals with zero registration.
+- 🎒 **School Children & Teachers:** Exchange worksheets, assignments, and reading PDFs safely without annoying pop-ups or ads.
+- 💻 **Developers & Coding Labs:** Share formatted code snippets, configs, or terminal logs with instant 5-minute ephemeral auto-destruction.
 
 ---
 
 ## 🚀 Key Features
 
-- 🎓 **Targeted for Education:** 100% free note, document, code, and homework sharing without mandatory logins or ads.
-- ⏱️ **Ephemeral Auto-Destruction:** Unprotected files and snippets automatically purge after 5 minutes for maximum privacy.
-- 🔒 **Record Protection & Locking:** Option to protect revision notes for up to 30 days or lock files with a security password.
-- 📁 **25 MB File Payloads:** Drag-and-drop document and image sharing with instant link generation.
-- 🌓 **Synchronized Dark / Light Mode:** Cyber-glassmorphism visual theme with persistent theme preferences.
-- 🗄️ **Centralized Database Architecture (`db.php`):** Unified, single-point MySQL connection with environment variables and host fallback support.
-- ⚡ **Instant JSON API:** High-speed endpoints for loading saved records seamlessly.
+- ⏱️ **5-Minute Ephemeral Purge:** Text snippets auto-destruct automatically after 5 minutes for privacy, or can be protected for 30 days.
+- 📁 **25 MB File Payloads:** Drag-and-drop document, image, PDF, and code upload with instant shareable links.
+- 🔒 **Vault Password Protection:** Sensitive files can be locked with a security key, preventing unauthorized downloads.
+- 🌓 **Synchronized Cyber Dark / Light Theme:** Modern cyber-glassmorphism theme with persistent localStorage state and mobile drawer.
+- 🔔 **Custom Creative Alerts:** SweetAlert2 notifications restyled to seamlessly blend with the cyber glassmorphism design.
+- 🗄️ **Centralized Database (`db.php`):** Single point of database configuration supporting environment variables and automatic host fallback.
+- ⚡ **High-Speed JSON API (`load_data_json.php`):** Asynchronous live search and retrieval for active sharing records.
+- 🔍 **Search & Search Filter:** Live client-side search across usernames, aliases, and payload previews.
+- 📱 **100% Mobile Responsive:** Optimized navigation, hamburger drawer, and card-based data representations on smaller screens.
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Architecture & Project Structure
 
 ```
-CPShareTxt/
+CPShareTxt_WebSite/
+├── db.php                 # Centralized MySQL connection gateway (single source of truth)
+├── index.html             # Main sharing studio: notes, code & 25MB file upload portal
+├── display_data.html      # Saved texts viewer: search, view, copy & protect
+├── backend.php            # File vault manager: lock/unlock, download & delete controls
+├── about.html             # Platform story, educational mission & maintainer details
+├── feedback_form.html     # User feedback & suggestion dispatch form
+├── admin_panel.php        # Secure admin console: upload limits & auto-purge timing
 │
-├── db.php                 # Centralized Database Connection (single source of truth)
-├── index.html             # Homepage: Interactive sharing interface & payload generation
-├── display_data.html      # Saved texts database viewer with search, copy, view & protect
-├── backend.php            # Uploaded files vault manager with lock, download & delete controls
-├── about.html             # About Us page: Mission, student target, creator background & Vexel IT
-├── feedback_form.html     # User & student feedback submission interface
-├── admin_panel.php        # Secure admin console for upload limits & auto-delete intervals
+├── load_data_json.php     # High-speed JSON API endpoint for saved text records
+├── load_data.php          # Server-side HTML table-render fallback endpoint
+├── save_text.php          # Backend processor for text/code snippets
+├── save_file.php          # Backend processor for uploaded file payloads
+├── delete_data.php        # Backend handler to delete records
+├── update_protection.php  # Backend handler to toggle 30-day retention protection
+├── verify_password.php    # Password verification endpoint for locked files
+├── cleanup.php            # Automated cron cleanup routine for expired items
+├── download.php           # Secure binary download stream helper
 │
-├── load_data_json.php     # High-performance JSON API for saved text records
-├── load_data.php          # PHP table-view & fallback record provider
-├── save_text.php          # Endpoint to process & store text/code snippets
-├── save_file.php          # Endpoint to process & store uploaded file payloads
-├── delete_data.php        # Endpoint to permanently delete saved texts
-├── update_protection.php  # Endpoint to toggle 30-day protection status
-├── verify_password.php    # Password validation handler for locked vault files
-├── cleanup.php            # Cron/manual script to purge expired ephemeral snippets
-├── download.php           # Secure file download stream helper
-└── send_feedback.php      # Email notification handler for submitted feedback
+├── styles.css             # Unified cyber-glassmorphic stylesheet (light/dark theme)
+├── logo.png               # Official CpShare TXT brand logo
+├── .htaccess              # Security headers, file size limits & MIME types
+├── .gitignore             # Git exclusions
+├── LICENSE                # MIT License
+└── README.md              # Project documentation
 ```
 
 ---
 
-## ⚙️ Tech Stack
+## 🛠️ Quick Start & Installation
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | HTML5, Modern CSS3 (Glassmorphism & Radial Gradients), Bootstrap 5, Bootstrap Icons, AOS, SweetAlert2 |
-| **Backend** | PHP (Clean modular scripts, UTF-8 charset, Centralized `db.php`) |
-| **Database** | MySQL (Tables: `user_texts`, `user_files`, `admin_settings`) |
-| **Hosting** | InfinityFree / Hostinger / Apache / Nginx |
-| **Maintainer** | Vexel IT • Colombo, Sri Lanka |
+### Prerequisites
+- PHP 7.4, 8.0, 8.1, or 8.2+
+- MySQL 5.7+ or MariaDB
+- Local web server (XAMPP, WampServer, Laragon) or any standard Linux/cPanel host
 
----
+### Setup Steps
 
-## ⚡ Installation & Setup
-
-1. **Clone the repository:**
+1. **Clone the Repository:**
    ```bash
    git clone https://github.com/kavizzz03/CPShareTxt_WebSite.git
-   cd CPShareTxt
+   cd CPShareTxt_WebSite
    ```
 
-2. **Configure Database Connection in `db.php`:**
-   Configure your MySQL credentials in `db.php` or set environment variables (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`):
-   ```php
-   define('DB_HOST', 'localhost');
-   define('DB_USER', 'your_username');
-   define('DB_PASS', 'your_password');
-   define('DB_NAME', 'your_database');
-   ```
+2. **Import Database:**
+   - Open phpMyAdmin or your MySQL client.
+   - Create a database: `cpshare_db` (or your preferred name).
+   - Import the schema from `Database/u569550465_dew.sql`.
 
-3. **Deploy on Apache / PHP Server:**
-   Ensure the `uploads/` directory exists and has write permissions (`chmod 777 uploads`).
+3. **Configure Database Connection:**
+   - Open `db.php` and verify your credentials:
+     ```php
+     define("DB_HOST", "localhost");
+     define("DB_USER", "root");
+     define("DB_PASS", "");
+     define("DB_NAME", "cpshare_db");
+     ```
+   - *Note: `db.php` automatically supports host fallback if deploying to cloud hosts.*
+
+4. **Run the Application:**
+   - Place inside your webroot (e.g., `htdocs/CPShareTxt`).
+   - Navigate to `http://localhost/CPShareTxt/` in your browser.
 
 ---
 
-## 📄 License & Credits
-© 2024–2026 **CP Share TXT**. All rights reserved.  
-Designed & Developed by **Kavindu Bogahawatte** | Maintained by **Vexel IT**.
+## 👨‍💻 Creator & Genesis
+
+- **Architect & Original Developer:** **Kavindu Bogahawatte**
+  - **Origin:** Designed and engineered as a 2nd-year undergraduate Software Engineering student in Sri Lanka.
+  - **Motivation:** Solved the problem of safely sharing lab codes and lecture drafts between university lab PCs and personal laptops without signing into personal social accounts.
+  - **Milestone:** **1st deployed live project** launched into production in **December 2024**.
+  - **Personal Portfolio:** [kavindubogahawatte.dev](https://www.kavindubogahawatte.dev/)
+
+---
+
+## 🛡️ Maintenance & Scaling
+
+- **Active System Maintainer:** **Vexel IT**
+- **Headquarters:** Colombo, Sri Lanka
+- **Contact:** `info.vexelit@gmail.com`
+- **Scope:** 24/7 uptime monitoring, database optimization, security patches, and community support for educational institutions.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for complete details. Free for students, educators, and institutions worldwide.
