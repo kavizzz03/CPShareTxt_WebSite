@@ -33,6 +33,58 @@
 
   <!-- Unified Stylesheet -->
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Creative List Design Additions */
+    .record-list-item {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+      border-radius: 12px;
+      transition: all 0.25s ease;
+      overflow: hidden;
+    }
+    .record-list-item:hover {
+      border-color: rgba(0, 210, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    .record-list-header {
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      user-select: none;
+    }
+    .record-chevron {
+      transition: transform 0.25s ease;
+      color: var(--brand-cyan, #00d2ff);
+    }
+    .record-list-item.is-expanded .record-chevron {
+      transform: rotate(90deg);
+    }
+    .record-list-item.is-expanded {
+      border-color: var(--brand-cyan, #00d2ff);
+      background: rgba(0, 210, 255, 0.02);
+    }
+    .record-detail-body {
+      padding: 0 1.25rem 1.25rem 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.15);
+    }
+    .record-snippet-preview {
+      font-size: 0.85rem;
+      color: var(--bs-secondary-color, #94a3b8);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .record-meta-pill {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
 </head>
 <body>
 
@@ -85,7 +137,7 @@
         <ul class="small text-muted mb-0 ps-3">
           <li>Unprotected text snippets auto-purge after <strong>5 minutes</strong>.</li>
           <li>Toggle <strong>Protect</strong> to preserve critical study notes or homework scripts for up to <strong>30 days</strong>.</li>
-          <li>Click <strong>Copy</strong> or <strong>View</strong> to read or copy the full payload instantly.</li>
+          <li>Click any record header to expand/collapse its full text content.</li>
         </ul>
       </div>
 
@@ -95,8 +147,9 @@
           <input id="searchInput" class="form-control-custom ps-4" type="search" placeholder="Search by student alias, subject, or code snippet..." />
           <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted ms-2 ps-1"></i>
         </div>
+        <button id="toggleAllBtn" class="btn-brand-outline"><i class="bi bi-arrows-expand me-1" id="toggleAllIcon"></i> <span id="toggleAllText">Expand All</span></button>
         <button id="displayFilesBtn" class="btn-brand-outline"><i class="bi bi-folder2-open me-1"></i> Files Vault</button>
-        <button id="refreshBtn" class="btn-brand-primary"><i class="bi bi-arrow-clockwise me-1"></i> Refresh Records</button>
+        <button id="refreshBtn" class="btn-brand-primary"><i class="bi bi-arrow-clockwise me-1"></i> Refresh</button>
       </div>
 
       <!-- Loading State -->
@@ -298,33 +351,70 @@
 
     function buildRecordCard(item, idx){
       const card = document.createElement('div');
-      card.className = 'glass-card-sm d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 p-3';
+      card.className = 'record-list-item';
+      card.id = `recordItem-${idx}`;
+      
+      const firstLine = (item.fulltext || '').trim().split(/\r?\n/)[0] || 'Empty content';
+      const snippet = firstLine.length > 70 ? firstLine.slice(0, 70) + '...' : firstLine;
+      const lineCount = (item.fulltext || '').split(/\r?\n/).length;
+      
       card.innerHTML = `
-        <div class="d-flex align-items-start gap-3 flex-grow-1 min-w-0" style="overflow: hidden; width: 100%;">
-          <div class="drag-icon-circle m-0 flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.1rem;">
-            <i class="bi bi-file-earmark-code"></i>
+        <!-- Compact Master List Header (Click to Toggle Full Text) -->
+        <div class="record-list-header" onclick="toggleRecord(${idx})">
+          <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1">
+            <i class="bi bi-chevron-right record-chevron" id="chevron-${idx}"></i>
+            <div class="drag-icon-circle m-0 flex-shrink-0" style="width: 38px; height: 38px; font-size: 1.05rem;">
+              <i class="bi bi-file-earmark-code text-info"></i>
+            </div>
+            <div class="min-w-0" style="overflow: hidden;">
+              <div class="d-flex align-items-center gap-2 mb-0">
+                <strong class="text-info text-truncate fs-6">${esc(item.username)}</strong>
+                ${item.is_protected ? '<span class="badge-glow-success"><i class="bi bi-shield-check me-1"></i> Protected</span>' : '<span class="badge-glow-warning"><i class="bi bi-hourglass-split me-1"></i> 5m Purge</span>'}
+              </div>
+              <div class="record-snippet-preview text-truncate" title="Click to view full text">
+                ${esc(snippet)}
+              </div>
+            </div>
           </div>
-          <div class="min-w-0" style="overflow: hidden; width: 100%;">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <strong class="text-info text-truncate">${esc(item.username)}</strong>
-              ${item.is_protected ? '<span class="badge-glow-success"><i class="bi bi-shield-check me-1"></i> Protected</span>' : '<span class="badge-glow-warning"><i class="bi bi-hourglass-split me-1"></i> 5m Purge</span>'}
-            </div>
-            <div class="small text-muted font-monospace text-truncate mb-1" style="max-width: 600px;">
-              ${esc(item.preview || item.fulltext)}
-            </div>
-            <div class="small text-muted" style="font-size: 0.76rem;">
-              <i class="bi bi-clock me-1"></i> ${esc(item.saved_at)}
-            </div>
+
+          <!-- List Row Meta & Quick Actions -->
+          <div class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap" onclick="event.stopPropagation()">
+            <span class="record-meta-pill d-none d-md-inline-flex text-muted"><i class="bi bi-calendar-event text-info me-1"></i> ${esc(item.saved_at)}</span>
+            <button class="btn btn-sm btn-outline-info copy-btn" data-idx="${idx}" title="Copy Text"><i class="bi bi-clipboard"></i> Copy</button>
+            <button class="btn btn-sm ${item.is_protected ? 'btn-outline-warning' : 'btn-outline-success'} protect-btn" data-idx="${idx}" title="Toggle Protection">
+              <i class="bi ${item.is_protected ? 'bi-shield-slash' : 'bi-shield-check'}"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-btn" data-idx="${idx}" title="Delete Record"><i class="bi bi-trash"></i></button>
+            <button class="btn btn-sm btn-outline-primary" onclick="toggleRecord(${idx})" title="Click to expand full text">
+              <i class="bi bi-chevron-down" id="btnIcon-${idx}"></i>
+            </button>
           </div>
         </div>
 
-        <div class="d-flex align-items-center gap-2 flex-shrink-0 w-100 w-md-auto justify-content-start justify-content-md-end flex-wrap pt-2 pt-md-0">
-          <button class="btn btn-sm btn-outline-info copy-btn" data-idx="${idx}" title="Copy Text"><i class="bi bi-clipboard"></i> Copy</button>
-          <button class="btn btn-sm btn-outline-primary view-btn" data-idx="${idx}" title="View Full"><i class="bi bi-eye"></i> View</button>
-          <button class="btn btn-sm ${item.is_protected ? 'btn-outline-warning' : 'btn-outline-success'} protect-btn" data-idx="${idx}" title="Toggle Protection">
-            <i class="bi ${item.is_protected ? 'bi-shield-slash' : 'bi-shield-check'}"></i> ${item.is_protected ? 'Unprotect' : 'Protect'}
-          </button>
-          <button class="btn btn-sm btn-outline-danger delete-btn" data-idx="${idx}" title="Delete Record"><i class="bi bi-trash"></i></button>
+        <!-- Expanded Full Details Body (Hidden by default, revealed on click) -->
+        <div class="record-detail-body" id="detailBody-${idx}" style="display: none;">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 px-1 pt-3">
+            <div class="small text-muted font-monospace">
+              <i class="bi bi-text-paragraph text-info me-1"></i><strong>${esc(item.username)}</strong> • ${(item.fulltext || '').length} characters • ${lineCount} lines
+            </div>
+            <span class="record-meta-pill d-inline-flex d-md-none"><i class="bi bi-calendar-event text-info me-1"></i> ${esc(item.saved_at)}</span>
+          </div>
+
+          <!-- Fully Visible Monospace Code & Notes Container -->
+          <div class="loaded-text-box mb-3" style="max-height: 380px; overflow: auto; background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+            <pre class="loaded-text-content m-0" style="font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; white-space: pre-wrap; word-break: break-word; color: #ffffff;">${esc(item.fulltext)}</pre>
+          </div>
+
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top border-secondary border-opacity-15">
+            <div class="small text-muted">
+              <i class="bi bi-info-circle text-info me-1"></i>Click anywhere on the header to collapse this record.
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button class="btn btn-sm btn-brand-primary copy-btn" data-idx="${idx}"><i class="bi bi-clipboard me-1"></i> Copy Full Text</button>
+              <button class="btn btn-sm btn-brand-outline view-btn" data-idx="${idx}"><i class="bi bi-arrows-fullscreen me-1"></i> Fullscreen Modal</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="toggleRecord(${idx})"><i class="bi bi-chevron-up me-1"></i> Collapse</button>
+            </div>
+          </div>
         </div>
       `;
       return card;
@@ -349,24 +439,78 @@
       });
     }
 
+    window.toggleRecord = function(idx){
+      const itemEl = document.getElementById(`recordItem-${idx}`);
+      const detailBody = document.getElementById(`detailBody-${idx}`);
+      if (!itemEl || !detailBody) return;
+      
+      const isExpanded = itemEl.classList.toggle('is-expanded');
+      detailBody.style.display = isExpanded ? 'block' : 'none';
+
+      const chevron = document.getElementById(`chevron-${idx}`);
+      const btnIcon = document.getElementById(`btnIcon-${idx}`);
+      if (chevron){
+        chevron.style.transform = isExpanded ? 'rotate(90deg)' : 'rotate(0deg)';
+      }
+      if (btnIcon){
+        btnIcon.className = isExpanded ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+      }
+    };
+
+    let allExpanded = false;
+    const toggleAllBtn = document.getElementById('toggleAllBtn');
+    const toggleAllText = document.getElementById('toggleAllText');
+    const toggleAllIcon = document.getElementById('toggleAllIcon');
+
+    if (toggleAllBtn){
+      toggleAllBtn.addEventListener('click', () => {
+        allExpanded = !allExpanded;
+        const items = document.querySelectorAll('.record-list-item');
+        items.forEach((it, idx) => {
+          const detailBody = document.getElementById(`detailBody-${idx}`);
+          if (allExpanded){
+            it.classList.add('is-expanded');
+            if (detailBody) detailBody.style.display = 'block';
+          } else {
+            it.classList.remove('is-expanded');
+            if (detailBody) detailBody.style.display = 'none';
+          }
+          const chevron = document.getElementById(`chevron-${idx}`);
+          const btnIcon = document.getElementById(`btnIcon-${idx}`);
+          if (chevron) chevron.style.transform = allExpanded ? 'rotate(90deg)' : 'rotate(0deg)';
+          if (btnIcon) btnIcon.className = allExpanded ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+        });
+        if (toggleAllText) toggleAllText.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+        if (toggleAllIcon) toggleAllIcon.className = allExpanded ? 'bi bi-arrows-collapse me-1' : 'bi bi-arrows-expand me-1';
+      });
+    }
+
     async function loadRecords(){
       loadingRow.style.display = 'flex';
+      emptyState.style.display = 'none';
       try {
         const res = await fetch(API_JSON, { cache: 'no-store' });
-        if (!res.ok) throw new Error('API failed');
+        if (!res.ok) throw new Error('HTTP Status ' + res.status);
         const data = await res.json();
-        records = data.map(it => ({
-          username: it.username || 'Anonymous',
-          fulltext: it.fulltext || it.text || '',
-          preview: it.preview || (it.fulltext || '').slice(0, 300),
-          is_protected: Number(it.is_protected || 0),
-          saved_at: it.saved_at || ''
-        }));
+        if (Array.isArray(data)){
+          records = data.map(it => ({
+            username: it.username || 'Anonymous',
+            fulltext: it.fulltext || it.text || '',
+            preview: it.preview || it.fulltext || it.text || '',
+            is_protected: Number(it.is_protected || 0),
+            saved_at: it.saved_at || ''
+          }));
+        } else if (data && data.message) {
+          throw new Error(data.message);
+        } else {
+          records = [];
+        }
         loadingRow.style.display = 'none';
         renderRecords();
       } catch (e) {
         try {
           const res2 = await fetch(API_HTML, { cache: 'no-store' });
+          if (!res2.ok) throw new Error('HTML fallback status ' + res2.status);
           const html = await res2.text();
           const doc = new DOMParser().parseFromString(html, 'text/html');
           const rows = doc.querySelectorAll('tbody tr');
@@ -374,10 +518,11 @@
           rows.forEach(r => {
             const userSpan = r.querySelector('.username-link');
             if (userSpan){
+              const full = userSpan.getAttribute('data-fulltext') || '';
               records.push({
                 username: userSpan.getAttribute('data-username') || userSpan.textContent.trim(),
-                fulltext: userSpan.getAttribute('data-fulltext') || '',
-                preview: userSpan.getAttribute('data-fulltext') ? userSpan.getAttribute('data-fulltext').slice(0, 300) : '',
+                fulltext: full,
+                preview: full,
                 is_protected: r.querySelector('.text-success') ? 1 : 0,
                 saved_at: r.querySelector('.badge') ? r.querySelector('.badge').textContent.trim() : ''
               });
@@ -387,7 +532,15 @@
           renderRecords();
         } catch (err){
           loadingRow.style.display = 'none';
-          Swal.fire({ icon: 'error', title: 'Loading Error', text: 'Could not fetch records.' });
+          emptyState.style.display = 'block';
+          emptyState.innerHTML = `
+            <div class="p-4 rounded-3 text-center" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25);">
+              <i class="bi bi-exclamation-triangle-fill text-danger fs-2 d-block mb-2"></i>
+              <div class="fw-bold text-danger mb-1">Database Connection Notice</div>
+              <div class="small text-muted mb-3">Unable to retrieve stored texts from active node (${esc(e.message || err.message)}).</div>
+              <button onclick="loadRecords()" class="btn-brand-primary btn-sm"><i class="bi bi-arrow-clockwise me-1"></i> Retry Connection</button>
+            </div>
+          `;
         }
       }
     }
