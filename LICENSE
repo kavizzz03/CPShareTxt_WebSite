@@ -1,7 +1,27 @@
-MIT License
+================================================================================
+                    CPShareTXT — STUDENT SHARING PLATFORM
+               SOFTWARE LICENSE & COMMUNITY USE AGREEMENT (MIT)
+================================================================================
 
-Copyright (c) 2024-present Kavindu Bogahawatte & Vexel IT
+PROJECT DETAILS & INTELLECTUAL PROPERTY IDENTIFICATION:
+--------------------------------------------------------------------------------
+Software Name          : CPShareTXT (Student Sharing Platform)
+Official Website       : https://cpsharetxt.site.je
+Repository             : https://github.com/kavizzz03/CPShareTxt_WebSite
+Initial Release Date   : December 2024
+Original Architect     : Kavindu Bogahawatte
+Creator Background     : Developed as a 2nd-Year Undergraduate Software Engineering Student
+Current Maintainer     : Vexel IT (Colombo, Sri Lanka)
+Contact & Inquiries    : info.vexelit@gmail.com
+Copyright Notice       : Copyright (c) 2024–present Kavindu Bogahawatte & Vexel IT.
+                         All Rights Reserved.
 
+================================================================================
+                             TERMS AND CONDITIONS
+================================================================================
+
+1. GRANT OF LICENSE (THE MIT LICENSE)
+--------------------------------------------------------------------------------
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -9,13 +29,65 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice, this list of conditions, and the following 
+disclaimers shall be included in all copies or substantial portions of the 
+Software.
 
+
+2. EDUCATIONAL & COMMUNITY ACCESS CHARTER
+--------------------------------------------------------------------------------
+CPShareTXT was envisioned and engineered with a primary mission to empower 
+academic collaboration. Therefore, under this license:
+  (a) University undergraduates, primary/secondary school students, teachers, 
+      academic instructors, and educational computer laboratory administrators 
+      are granted unrestricted, perpetual, royalty-free rights to deploy, host, 
+      study, modify, and integrate this software for teaching, learning, and 
+      classroom collaboration.
+  (b) Academic institutions may deploy local or institutional instances of 
+      CPShareTXT on campus networks and intranets without paying licensing fees.
+
+
+3. ATTRIBUTION & INTEGRITY OF NOTICES
+--------------------------------------------------------------------------------
+Any redistribution of the Software, in source code or compiled/binary form, 
+with or without modification, must retain:
+  (a) The original developer credit attributing Kavindu Bogahawatte as the 
+      founding architect.
+  (b) The system maintainer credit attributing Vexel IT as the infrastructure 
+      and maintenance provider.
+  (c) The link to the official repository (https://github.com/kavizzz03/CPShareTxt_WebSite).
+
+
+4. TRADEMARKS & BRAND IDENTITY
+--------------------------------------------------------------------------------
+This license does not grant permission to use the trade names, trademarks, 
+service marks, or product logos of "CPShareTXT", "Kavindu Bogahawatte", or 
+"Vexel IT", except as required for reasonable and customary use in describing 
+the origin of the Software and reproducing the content of the copyright notice.
+
+
+5. DATA PRIVACY & EPHEMERAL STORAGE RESPONSIBILITY
+--------------------------------------------------------------------------------
+CPShareTXT provides ephemeral data storage and automated purge routines 
+(including 5-minute transient destruction of unpreserved records and 25MB file 
+upload ceilings). Users and deploying organizations acknowledge that:
+  (a) The Software is not intended for the permanent archival of mission-critical 
+      records.
+  (b) Neither the copyright holders nor the maintainers shall be liable for data 
+      loss resulting from automated purge mechanisms, user deletion, or expired 
+      transient sessions.
+
+
+6. DISCLAIMER OF WARRANTY & LIMITATION OF LIABILITY
+--------------------------------------------------------------------------------
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+AUTHORS, COPYRIGHT HOLDERS, OR SYSTEM MAINTAINERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+================================================================================
+          Built with dedication for students and educators worldwide.
+================================================================================
